@@ -1,0 +1,18 @@
+{
+    "name": "puresoft/jibimo-api",
+    "description": "This library will connect to Jibimo API and bring you a reliable interface to work with",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Hesam Gholami",
+            "email": "hesamgholami@yahoo.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "puresoft\\jibimo\\": "src/"
+        }
+    },
+    "require": {}
+}
