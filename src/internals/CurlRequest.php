@@ -4,7 +4,9 @@
 namespace puresoft\jibimo\internals;
 
 
-class CurlHelper
+use puresoft\jibimo\exceptions\CurlResultFailedException;
+
+class CurlRequest
 {
 
     /**
@@ -12,9 +14,10 @@ class CurlHelper
      * @param $url string URL to send POST.
      * @param array $data POST Body data.
      * @param array $headers Request headers.
-     * @return bool|string CURL execution result.
+     * @return CurlResult CURL execution result.
+     * @throws CurlResultFailedException
      */
-    public static function post(string $url, array $data, array $headers)
+    public static function post(string $url, array $data, array $headers): CurlResult
     {
         $curlHandler = curl_init();
         curl_setopt($curlHandler, CURLOPT_URL, $url);
@@ -25,25 +28,40 @@ class CurlHelper
         curl_setopt($curlHandler, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($curlHandler, CURLOPT_HTTPHEADER, $headers);
         $res = curl_exec($curlHandler);
+        $httpStatusCode = curl_getinfo($curlHandler, CURLINFO_HTTP_CODE);
         curl_close($curlHandler);
-        return $res;
+
+        if ($res === false) {
+            // CURL is unable to get result
+            throw new CurlResultFailedException("CURL is unable to get result from Jibimo API at `$url`.");
+        }
+
+        return new CurlResult($httpStatusCode, $res);
     }
 
     /**
      * This function will be used for sending GET requests to Jibimo API.
      * @param $url string URL to send POST.
      * @param array $headers Request headers.
-     * @return bool|string CURL execution result.
+     * @return CurlResult CURL execution result.
+     * @throws CurlResultFailedException
      */
-    public static function get(string $url, array $headers)
+    public static function get(string $url, array $headers): CurlResult
     {
         $curlHandler = curl_init($url);
         curl_setopt($curlHandler, CURLOPT_SSL_VERIFYPEER, true);
         curl_setopt($curlHandler, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($curlHandler, CURLOPT_HTTPHEADER, $headers);
         $res = curl_exec($curlHandler);
+        $httpStatusCode = curl_getinfo($curlHandler, CURLINFO_HTTP_CODE);
         curl_close($curlHandler);
-        return $res;
+
+        if ($res === false) {
+            // CURL is unable to get result
+            throw new CurlResultFailedException("CURL is unable to get result from Jibimo API at `$url`.");
+        }
+
+        return new CurlResult($httpStatusCode, $res);
     }
 
     /**

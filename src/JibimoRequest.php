@@ -5,49 +5,47 @@ namespace puresoft\jibimo;
 
 
 use puresoft\jibimo\api\Request;
+use puresoft\jibimo\models\RequestTransactionRequest;
+use puresoft\jibimo\models\RequestTransactionResponse;
 
 class JibimoRequest
 {
-    private $token;
-    private $baseUrl;
+    /** @var $request RequestTransactionRequest */
+    private $request;
 
-    /**
-     * JibimoRequest constructor.
-     * @param string $token Jibimo API token.
-     * @param string $baseUrl URL of Jibimo API.
-     */
-    public function __construct(string $token, string $baseUrl)
-    {
-        $this->token = $token;
-        $this->baseUrl = $baseUrl;
-    }
+    /** @var $response RequestTransactionResponse */
+    private $response;
 
     /**
      * Using this method you can perform a Jibimo request money transaction to a mobile number which may or may not be
      * in Jibimo.
-     * @param string $mobileNumber Target mobile number to request money from.
-     * @param int $amount Amount of money to request in Toomaans.
-     * @param string $privacy Jibimo privacy level of transaction which could be one of `Public`, `Friend` or `Personal`.
-     * @param string|null $description Descriptions of transaction which will be show up in Jibimo.
-     * @param string|null $trackerId Tracker ID to be saved in Jibimo and used later for finding transaction. This value
-     * is optional, but it is highly recommended to provide a unique value for it.
-     * @param string|null $returnUrl The URL to return after payment. If you leave this URL blank, Jibimo will redirect
-     * user to your company homepage.
-     * @return bool|string CURL execution result.
+     * @param RequestTransactionRequest $request The object request transaction which is contains its request data to be
+     * send to Jibimo API.
+     * @return RequestTransactionResponse An object that will have data about response of this request.
+     * @throws exceptions\CurlResultFailedException
      */
-    public function request(string $mobileNumber, int $amount, string $privacy, ?string $description, ?string $trackerId,
-                            ?string $returnUrl)
+    public function request(RequestTransactionRequest $request)
     {
-        return Request::request($this->baseUrl, $this->token, $mobileNumber, $amount, $privacy, $description, $trackerId, $returnUrl);
+        $this->request = $request;
+
+        $curlResponse = Request::request($request->getBaseUrl(), $request->getToken(), $request->getMobileNumber(),
+            $request->getAmount(), $request->getPrivacy(), $request->getTrackerId(), $request->getDescription(),
+            $request->getReturnUrl());
+
+        $rawResult = $curlResponse->getResult();
+
+        // TODO Handle API error messages
+        $jsonResult = json_decode($rawResult);
+
+        // Convert raw response data to relevant object
+        $response = new RequestTransactionResponse($rawResult, $jsonResult->id, $jsonResult->tracker_id,
+            $jsonResult->amount, $jsonResult->payer, $jsonResult->privacy, $jsonResult->status,
+            $jsonResult->created_at->date, $jsonResult->updated_at->date, $jsonResult->redirect,
+            $jsonResult->description);
+
+        $this->response = $response;
+
+        return $response;
     }
 
-    /**
-     * After creating a request transaction. You will need to check the status of that transaction using this method.
-     * @param int $transactionId The ID of a money request transaction that you requested before.
-     * @return bool|string CURL execution result.
-     */
-    public function validate(int $transactionId)
-    {
-        return Request::validateRequest($this->baseUrl, $this->token, $transactionId);
-    }
 }
