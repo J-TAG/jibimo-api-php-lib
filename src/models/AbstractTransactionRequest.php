@@ -4,6 +4,10 @@
 namespace puresoft\jibimo\models;
 
 
+use puresoft\jibimo\exceptions\InvalidJibimoPrivacyLevel;
+use puresoft\jibimo\exceptions\InvalidMobileNumberException;
+use puresoft\jibimo\internals\DataNormalizer;
+
 abstract class AbstractTransactionRequest
 {
     private $baseUrl;
@@ -24,15 +28,17 @@ abstract class AbstractTransactionRequest
      * @param string $privacy Jibimo privacy level of transaction which could be one of `Public`, `Friend` or `Personal`.
      * @param string|null $trackerId Tracker ID to be saved in Jibimo and used later for finding transaction.
      * @param string|null $description Descriptions of transaction which will be show up in Jibimo.
+     * @throws InvalidJibimoPrivacyLevel
+     * @throws InvalidMobileNumberException
      */
     public function __construct(string $baseUrl, string $token, string $mobileNumber, int $amount, string $privacy,
                                 string $trackerId, ?string $description = null)
     {
         $this->baseUrl = $baseUrl;
         $this->token = $token;
-        $this->mobileNumber = $mobileNumber;
+        $this->mobileNumber = DataNormalizer::normalizeMobileNumber($mobileNumber);
         $this->amount = $amount;
-        $this->privacy = $privacy;
+        $this->privacy = DataNormalizer::normalizePrivacyLevel($privacy);
         $this->trackerId = $trackerId;
         $this->description = $description;
     }
@@ -55,11 +61,11 @@ abstract class AbstractTransactionRequest
 
     /**
      * @return string
+     * @throws InvalidMobileNumberException
      */
     public function getMobileNumber(): string
     {
-        // TODO: Normalize mobile number here
-        return $this->mobileNumber;
+        return DataNormalizer::normalizeMobileNumber($this->mobileNumber);
     }
 
     /**
@@ -72,11 +78,11 @@ abstract class AbstractTransactionRequest
 
     /**
      * @return string
+     * @throws InvalidJibimoPrivacyLevel
      */
     public function getPrivacy(): string
     {
-        // TODO: Normalize privacy here
-        return $this->privacy;
+        return DataNormalizer::normalizePrivacyLevel($this->privacy);
     }
 
     /**
