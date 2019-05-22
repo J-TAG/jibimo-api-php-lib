@@ -5,6 +5,7 @@ namespace puresoft\jibimo;
 
 
 use puresoft\jibimo\api\Request;
+use puresoft\jibimo\models\TransactionVerificationResponse;
 
 class JibimoValidator
 {
@@ -30,12 +31,26 @@ class JibimoValidator
      * @param string $mobileNumber
      * @return bool Transaction validation result.
      * @throws exceptions\CurlResultFailedException
+     * @throws exceptions\InvalidJibimoPrivacyLevel
+     * @throws exceptions\InvalidMobileNumberException
      */
     public function validateRequestTransaction(int $transactionId, int $amount, string $mobileNumber): bool
     {
-        $response = Request::validateRequest($this->baseUrl, $this->token, $transactionId);
+        $curlResult = Request::validateRequest($this->baseUrl, $this->token, $transactionId);
 
-        // TODO: Check response here
+        // TODO : Check API errors and http status code here
+
+        $rawResult = $curlResult->getResult();
+
+        $jsonResult = json_decode($rawResult);
+
+        $response = new TransactionVerificationResponse($rawResult, $jsonResult->id, $jsonResult->tracker_id,
+            $jsonResult->amount, $jsonResult->payer, $jsonResult->privacy, $jsonResult->status,
+            $jsonResult->created_at->date, $jsonResult->updated_at->date, $jsonResult->description);
+
+        var_dump($response);
+
+        // TODO: Check response here, status must be Accepted
         return false;
     }
 }
