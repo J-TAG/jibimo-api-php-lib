@@ -4,10 +4,18 @@
 namespace puresoft\jibimo\internals;
 
 
+use puresoft\jibimo\exceptions\InvalidJibimoPrivacyLevel;
 use puresoft\jibimo\exceptions\InvalidMobileNumberException;
+use puresoft\jibimo\JibimoPrivacyLevel;
 
 class DataNormalizer
 {
+    /**
+     * This method will normalize o mobile number for you to use in Jibimo API.
+     * @param string $mobileNumber The mobile number to normalize.
+     * @return string The normalized mobile number.
+     * @throws InvalidMobileNumberException
+     */
     public static function normalizeMobileNumber(string $mobileNumber): string
     {
         // First normalize digits
@@ -50,14 +58,46 @@ class DataNormalizer
 
         // Mobile number structure is invalid, so throw exception
         throw new InvalidMobileNumberException("This mobile number format is invalid and can not be normalized:
-         `$normalizedNumber`. Please double check the length of digits and use a format like +989123456789 or 989123456789 or 09123456789 or 9123456789.");
+         `$normalizedNumber`. Please double check the length of digits and use a format like +989123456789
+          , 989123456789 , 09123456789 or 9123456789.");
 
 
     }
 
+    /**
+     * This method will normalize s Jibimo privacy level string for you.
+     * @param string $privacyLevel Jibimo privacy level to normalize.
+     * @return string Normalized Jibimo privacy level.
+     * @throws InvalidJibimoPrivacyLevel
+     */
     public static function normalizePrivacyLevel(string $privacyLevel): string
     {
-        // TODO: Normalize privacy level here
+        // Return correctly formatted items first of all
+        switch ($privacyLevel) {
+            case JibimoPrivacyLevel::PERSONAL:
+            case JibimoPrivacyLevel::FRIEND:
+            case JibimoPrivacyLevel::PUBLIC:
+                return $privacyLevel;
+        }
+
+        // Remove extra whitespaces
+        $trimmedPrivacyLevel = trim($privacyLevel);
+        // Turn text into lowercase for better comparision
+        $loweredPrivacyLevel = strtolower($trimmedPrivacyLevel);
+
+        // If problem is string case sensitivity, we can correct it
+        switch ($loweredPrivacyLevel) {
+            case strtolower(JibimoPrivacyLevel::PERSONAL):
+                return JibimoPrivacyLevel::PERSONAL;
+            case strtolower(JibimoPrivacyLevel::FRIEND):
+                return JibimoPrivacyLevel::FRIEND;
+            case strtolower(JibimoPrivacyLevel::PUBLIC):
+                return JibimoPrivacyLevel::PUBLIC;
+        }
+
+        // Privacy level is invalid
+        throw new InvalidJibimoPrivacyLevel("The provided Jibimo privacy level `$privacyLevel` is invalid. 
+        Please use one of `Personal`, `Friend` or `Public`.");
     }
 
     /**
