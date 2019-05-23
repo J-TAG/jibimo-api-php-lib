@@ -9,55 +9,44 @@ use puresoft\jibimo\exceptions\InvalidJibimoTransactionStatus;
 use puresoft\jibimo\exceptions\InvalidMobileNumberException;
 use puresoft\jibimo\internals\DataNormalizer;
 
-class RequestTransactionResponse extends AbstractTransactionResponse
+class PayTransactionResponse extends AbstractTransactionResponse
 {
+    private $payee;
 
-    private $payer;
-    private $redirect;
 
     /**
-     * RequestTransactionResponse constructor.
+     * PayTransactionResponse constructor.
      * @param string $raw
      * @param int $transactionId
      * @param string $trackerId
      * @param int $amount
-     * @param string $payer
+     * @param string $payee
      * @param string $privacy
      * @param string $status
      * @param string $createdAt
      * @param string $updatedAt
-     * @param string $redirect
      * @param string|null $description
      * @throws InvalidJibimoPrivacyLevel
-     * @throws InvalidMobileNumberException
      * @throws InvalidJibimoTransactionStatus
+     * @throws InvalidMobileNumberException
      */
-    public function __construct(string $raw, int $transactionId, string $trackerId, int $amount, string $payer,
-                                string $privacy, string $status, string $createdAt, string $updatedAt, string $redirect,
+    public function __construct(string $raw, int $transactionId, string $trackerId, int $amount, string $payee,
+                                string $privacy, string $status, string $createdAt, string $updatedAt,
                                 ?string $description = null)
     {
         parent::__construct($raw, $transactionId, $trackerId, $amount, $privacy, $status, $createdAt,
             $updatedAt, $description);
 
-        $this->payer = DataNormalizer::normalizeMobileNumber($payer);
-        $this->redirect = $redirect;
-    }
-
-    /**
-     * @return string
-     */
-    public function getRedirectUrl(): string
-    {
-        return $this->redirect;
+        $this->payee = DataNormalizer::normalizeMobileNumber($payee);
     }
 
     /**
      * @return string
      * @throws InvalidMobileNumberException
      */
-    public function getPayer(): string
+    public function getPayee(): string
     {
-        return DataNormalizer::normalizeMobileNumber($this->payer);
+        return DataNormalizer::normalizeMobileNumber($this->payee);
     }
 
 }

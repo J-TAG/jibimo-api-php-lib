@@ -5,6 +5,7 @@ namespace puresoft\jibimo\models;
 
 
 use puresoft\jibimo\exceptions\InvalidJibimoPrivacyLevel;
+use puresoft\jibimo\exceptions\InvalidJibimoTransactionStatus;
 use puresoft\jibimo\exceptions\InvalidMobileNumberException;
 use puresoft\jibimo\internals\DataNormalizer;
 
@@ -15,7 +16,6 @@ abstract class AbstractTransactionResponse
     private $transactionId;
     private $trackerId;
     private $amount;
-    private $payer;
     private $privacy;
     private $status;
     private $createdAt;
@@ -24,30 +24,28 @@ abstract class AbstractTransactionResponse
 
     /**
      * AbstractTransactionResponse constructor.
-     * @param $raw
-     * @param $transactionId
-     * @param $trackerId
-     * @param $amount
-     * @param $payer
-     * @param $privacy
-     * @param $status
-     * @param $createdAt
-     * @param $updatedAt
-     * @param $description
+     * @param string $raw
+     * @param int $transactionId
+     * @param string $trackerId
+     * @param int $amount
+     * @param string $privacy
+     * @param string $status
+     * @param string $createdAt
+     * @param string $updatedAt
+     * @param string|null $description
      * @throws InvalidJibimoPrivacyLevel
-     * @throws InvalidMobileNumberException
+     * @throws InvalidJibimoTransactionStatus
      */
-    public function __construct(string $raw, int $transactionId, string $trackerId, int $amount, string $payer,
-                                string $privacy, string $status, string $createdAt, string $updatedAt,
+    public function __construct(string $raw, int $transactionId, string $trackerId, int $amount, string $privacy,
+                                string $status, string $createdAt, string $updatedAt,
                                 ?string $description = null)
     {
         $this->raw = $raw;
         $this->transactionId = $transactionId;
         $this->trackerId = $trackerId;
         $this->amount = $amount;
-        $this->payer = DataNormalizer::normalizeMobileNumber($payer);
         $this->privacy = DataNormalizer::normalizePrivacyLevel($privacy);
-        $this->status = $status;
+        $this->status = DataNormalizer::normalizeTransactionStatus($status);
         $this->createdAt = $createdAt;
         $this->updatedAt = $updatedAt;
         $this->description = $description;
@@ -87,15 +85,6 @@ abstract class AbstractTransactionResponse
 
     /**
      * @return string
-     * @throws InvalidMobileNumberException
-     */
-    public function getPayer(): string
-    {
-        return DataNormalizer::normalizeMobileNumber($this->payer);
-    }
-
-    /**
-     * @return string
      * @throws InvalidJibimoPrivacyLevel
      */
     public function getPrivacy(): string
@@ -105,11 +94,11 @@ abstract class AbstractTransactionResponse
 
     /**
      * @return string
+     * @throws InvalidJibimoTransactionStatus
      */
     public function getStatus(): string
     {
-        // TODO: Normalize status here
-        return $this->status;
+        return DataNormalizer::normalizeTransactionStatus($this->status);
     }
 
     /**

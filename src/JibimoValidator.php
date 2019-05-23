@@ -4,7 +4,10 @@
 namespace puresoft\jibimo;
 
 
+use puresoft\jibimo\api\Pay;
 use puresoft\jibimo\api\Request;
+use puresoft\jibimo\exceptions\CurlResultFailedException;
+use puresoft\jibimo\internals\CurlResult;
 use puresoft\jibimo\models\TransactionVerificationResponse;
 
 class JibimoValidator
@@ -67,5 +70,30 @@ class JibimoValidator
 
         // Transaction details is invalid, there is not transaction with that details
         return new JibimoValidationResult($curlResult, false);
+    }
+
+    /**
+     * After creating a pay transaction. You will need to check the status of that transaction using this method.
+     * @param int $transactionId The ID of a pay money transaction that you requested before.
+     * @return CurlResult CURL execution result.
+     * @throws exceptions\CurlResultFailedException
+     */
+    public function validatePay(int $transactionId)
+    {
+        // TODO: Update code for pay transaction validation
+        return Pay::validatePay($this->baseUrl, $this->token, $transactionId);
+    }
+
+    /**
+     * After creating an extended pay transaction. You will need to check the status of that transaction using this
+     * method.
+     * @param int $transactionId The ID of an extended pay money transaction that you requested before.
+     * @return CurlResult CURL execution result.
+     * @throws exceptions\CurlResultFailedException
+     */
+    public function extendedPayValidate(int $transactionId)
+    {
+        // TODO: Update code for extended pay transaction validation
+        return Pay::validateExtendedPay($this->baseUrl, $this->token, $transactionId);
     }
 }
