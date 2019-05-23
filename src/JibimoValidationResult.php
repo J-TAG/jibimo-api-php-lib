@@ -90,7 +90,11 @@ class JibimoValidationResult
      */
     public function getStatus(): ?string
     {
-        return $this->getCurlResult()->getHttpStatusCode();
+        if(empty($this->response)) {
+            return null;
+        }
+        
+        return $this->getResponse()->getStatus();
     }
 
     /**
