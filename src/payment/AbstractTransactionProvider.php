@@ -1,10 +1,11 @@
 <?php
 
 
-namespace puresoft\jibimo\internals;
+namespace puresoft\jibimo\payment;
 
 
 use puresoft\jibimo\exceptions\InvalidJibimoResponse;
+use puresoft\jibimo\internals\CurlResult;
 use puresoft\jibimo\models\AbstractTransactionRequest;
 use puresoft\jibimo\models\AbstractTransactionResponse;
 
@@ -16,6 +17,11 @@ abstract class AbstractTransactionProvider
     /** @var $response AbstractTransactionResponse */
     protected $response;
 
+    /**
+     * @param CurlResult $curlResult
+     * @return mixed
+     * @throws InvalidJibimoResponse
+     */
     protected function convertRawDataToJson(CurlResult $curlResult) {
         $rawResult = $curlResult->getResult();
         $httpStatusCode = $curlResult->getHttpStatusCode();

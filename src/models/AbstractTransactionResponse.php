@@ -6,13 +6,11 @@ namespace puresoft\jibimo\models;
 
 use puresoft\jibimo\exceptions\InvalidJibimoPrivacyLevel;
 use puresoft\jibimo\exceptions\InvalidJibimoTransactionStatus;
-use puresoft\jibimo\exceptions\InvalidMobileNumberException;
 use puresoft\jibimo\internals\DataNormalizer;
 
 abstract class AbstractTransactionResponse
 {
     private $raw;
-
     private $transactionId;
     private $trackerId;
     private $amount;

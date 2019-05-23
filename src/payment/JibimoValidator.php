@@ -1,14 +1,17 @@
 <?php
 
 
-namespace puresoft\jibimo;
+namespace puresoft\jibimo\payment;
 
 
 use puresoft\jibimo\api\Pay;
 use puresoft\jibimo\api\Request;
 use puresoft\jibimo\exceptions\CurlResultFailedException;
+use puresoft\jibimo\exceptions\InvalidJibimoPrivacyLevel;
+use puresoft\jibimo\exceptions\InvalidJibimoTransactionStatus;
+use puresoft\jibimo\exceptions\InvalidMobileNumberException;
 use puresoft\jibimo\internals\CurlResult;
-use puresoft\jibimo\models\TransactionVerificationResponse;
+use puresoft\jibimo\models\verification\TransactionVerificationResponse;
 
 class JibimoValidator
 {
@@ -34,11 +37,13 @@ class JibimoValidator
      * @param string $mobileNumber
      * @param string $trackerId
      * @return JibimoValidationResult
-     * @throws exceptions\CurlResultFailedException
-     * @throws exceptions\InvalidJibimoPrivacyLevel
-     * @throws exceptions\InvalidMobileNumberException
+     * @throws CurlResultFailedException
+     * @throws InvalidJibimoPrivacyLevel
+     * @throws InvalidJibimoTransactionStatus
+     * @throws InvalidMobileNumberException
      */
     public function validateRequestTransaction(int $transactionId, int $amount, string $mobileNumber, string $trackerId)
+        : JibimoValidationResult
     {
         $curlResult = Request::validateRequest($this->baseUrl, $this->token, $transactionId);
 
@@ -76,9 +81,9 @@ class JibimoValidator
      * After creating a pay transaction. You will need to check the status of that transaction using this method.
      * @param int $transactionId The ID of a pay money transaction that you requested before.
      * @return CurlResult CURL execution result.
-     * @throws exceptions\CurlResultFailedException
+     * @throws CurlResultFailedException
      */
-    public function validatePay(int $transactionId)
+    public function validatePay(int $transactionId): JibimoValidationResult
     {
         // TODO: Update code for pay transaction validation
         return Pay::validatePay($this->baseUrl, $this->token, $transactionId);
@@ -89,9 +94,9 @@ class JibimoValidator
      * method.
      * @param int $transactionId The ID of an extended pay money transaction that you requested before.
      * @return CurlResult CURL execution result.
-     * @throws exceptions\CurlResultFailedException
+     * @throws CurlResultFailedException
      */
-    public function extendedPayValidate(int $transactionId)
+    public function extendedPayValidate(int $transactionId): JibimoValidationResult
     {
         // TODO: Update code for extended pay transaction validation
         return Pay::validateExtendedPay($this->baseUrl, $this->token, $transactionId);

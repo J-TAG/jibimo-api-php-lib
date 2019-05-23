@@ -1,14 +1,17 @@
 <?php
 
 
-namespace puresoft\jibimo;
+namespace puresoft\jibimo\payment;
 
 
 use puresoft\jibimo\api\Request;
+use puresoft\jibimo\exceptions\CurlResultFailedException;
+use puresoft\jibimo\exceptions\InvalidJibimoPrivacyLevel;
 use puresoft\jibimo\exceptions\InvalidJibimoResponse;
-use puresoft\jibimo\internals\AbstractTransactionProvider;
-use puresoft\jibimo\models\RequestTransactionRequest;
-use puresoft\jibimo\models\RequestTransactionResponse;
+use puresoft\jibimo\exceptions\InvalidJibimoTransactionStatus;
+use puresoft\jibimo\exceptions\InvalidMobileNumberException;
+use puresoft\jibimo\models\request\RequestTransactionRequest;
+use puresoft\jibimo\models\request\RequestTransactionResponse;
 
 class JibimoRequest extends AbstractTransactionProvider
 {
@@ -19,12 +22,13 @@ class JibimoRequest extends AbstractTransactionProvider
      * @param RequestTransactionRequest $request The object request transaction which is contains its request data to be
      * send to Jibimo API.
      * @return RequestTransactionResponse An object that will have data about response of this request.
+     * @throws CurlResultFailedException
+     * @throws InvalidJibimoPrivacyLevel
      * @throws InvalidJibimoResponse
-     * @throws exceptions\CurlResultFailedException
-     * @throws exceptions\InvalidJibimoPrivacyLevel
-     * @throws exceptions\InvalidMobileNumberException
+     * @throws InvalidJibimoTransactionStatus
+     * @throws InvalidMobileNumberException
      */
-    public function request(RequestTransactionRequest $request)
+    public function request(RequestTransactionRequest $request): RequestTransactionResponse
     {
         $this->request = $request;
 

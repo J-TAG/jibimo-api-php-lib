@@ -1,7 +1,7 @@
 <?php
 
 
-namespace puresoft\jibimo\models;
+namespace puresoft\jibimo\models\pay;
 
 
 use puresoft\jibimo\exceptions\InvalidJibimoPrivacyLevel;

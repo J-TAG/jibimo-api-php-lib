@@ -1,16 +1,19 @@
 <?php
 
 
-namespace puresoft\jibimo;
+namespace puresoft\jibimo\payment;
 
 
 use puresoft\jibimo\api\Pay;
 use puresoft\jibimo\exceptions\CurlResultFailedException;
-use puresoft\jibimo\internals\AbstractTransactionProvider;
-use puresoft\jibimo\models\ExtendedPayTransactionRequest;
-use puresoft\jibimo\models\ExtendedPayTransactionResponse;
-use puresoft\jibimo\models\PayTransactionRequest;
-use puresoft\jibimo\models\PayTransactionResponse;
+use puresoft\jibimo\exceptions\InvalidJibimoPrivacyLevel;
+use puresoft\jibimo\exceptions\InvalidJibimoResponse;
+use puresoft\jibimo\exceptions\InvalidJibimoTransactionStatus;
+use puresoft\jibimo\exceptions\InvalidMobileNumberException;
+use puresoft\jibimo\models\pay\ExtendedPayTransactionRequest;
+use puresoft\jibimo\models\pay\ExtendedPayTransactionResponse;
+use puresoft\jibimo\models\pay\PayTransactionRequest;
+use puresoft\jibimo\models\pay\PayTransactionResponse;
 
 class JibimoPay extends AbstractTransactionProvider
 {
@@ -22,12 +25,12 @@ class JibimoPay extends AbstractTransactionProvider
      * send to Jibimo API.
      * @return PayTransactionResponse An object that will have data about response of this request.
      * @throws CurlResultFailedException
-     * @throws exceptions\InvalidJibimoPrivacyLevel
-     * @throws exceptions\InvalidJibimoResponse
-     * @throws exceptions\InvalidMobileNumberException
-     * @throws exceptions\InvalidJibimoTransactionStatus
+     * @throws InvalidJibimoPrivacyLevel
+     * @throws InvalidJibimoResponse
+     * @throws InvalidJibimoTransactionStatus
+     * @throws InvalidMobileNumberException
      */
-    public function pay(PayTransactionRequest $request)
+    public function pay(PayTransactionRequest $request): PayTransactionResponse
     {
         $this->request = $request;
 
@@ -52,12 +55,12 @@ class JibimoPay extends AbstractTransactionProvider
      * @param ExtendedPayTransactionRequest $request
      * @return ExtendedPayTransactionResponse CURL execution result.
      * @throws CurlResultFailedException
-     * @throws exceptions\InvalidJibimoPrivacyLevel
-     * @throws exceptions\InvalidJibimoResponse
-     * @throws exceptions\InvalidMobileNumberException
-     * @throws exceptions\InvalidJibimoTransactionStatus
+     * @throws InvalidJibimoPrivacyLevel
+     * @throws InvalidJibimoResponse
+     * @throws InvalidJibimoTransactionStatus
+     * @throws InvalidMobileNumberException
      */
-    public function extendedPay(ExtendedPayTransactionRequest $request)
+    public function extendedPay(ExtendedPayTransactionRequest $request): ExtendedPayTransactionResponse
     {
         $this->request = $request;
 

@@ -1,11 +1,12 @@
 <?php
 
 
-namespace puresoft\jibimo\models;
+namespace puresoft\jibimo\models\pay;
 
 
 use puresoft\jibimo\exceptions\InvalidJibimoPrivacyLevel;
 use puresoft\jibimo\exceptions\InvalidMobileNumberException;
+use puresoft\jibimo\models\AbstractTransactionRequest;
 
 class PayTransactionRequest extends AbstractTransactionRequest
 {

@@ -1,7 +1,7 @@
 <?php
 
 
-namespace puresoft\jibimo;
+namespace puresoft\jibimo\payment\values;
 
 
 abstract class JibimoPrivacyLevel

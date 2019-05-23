@@ -7,8 +7,8 @@ namespace puresoft\jibimo\internals;
 use puresoft\jibimo\exceptions\InvalidJibimoPrivacyLevel;
 use puresoft\jibimo\exceptions\InvalidJibimoTransactionStatus;
 use puresoft\jibimo\exceptions\InvalidMobileNumberException;
-use puresoft\jibimo\JibimoPrivacyLevel;
-use puresoft\jibimo\JibimoTransactionStatus;
+use puresoft\jibimo\payment\values\JibimoPrivacyLevel;
+use puresoft\jibimo\payment\values\JibimoTransactionStatus;
 
 class DataNormalizer
 {

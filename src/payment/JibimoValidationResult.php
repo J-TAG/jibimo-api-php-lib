@@ -1,11 +1,13 @@
 <?php
 
 
-namespace puresoft\jibimo;
+namespace puresoft\jibimo\payment;
 
 
+use puresoft\jibimo\exceptions\InvalidJibimoTransactionStatus;
 use puresoft\jibimo\internals\CurlResult;
-use puresoft\jibimo\models\TransactionVerificationResponse;
+use puresoft\jibimo\models\verification\TransactionVerificationResponse;
+use puresoft\jibimo\payment\values\JibimoTransactionStatus;
 
 class JibimoValidationResult
 {
@@ -47,6 +49,7 @@ class JibimoValidationResult
 
     /**
      * @return bool
+     * @throws InvalidJibimoTransactionStatus
      */
     public function isAccepted(): bool
     {
@@ -55,6 +58,7 @@ class JibimoValidationResult
 
     /**
      * @return bool
+     * @throws InvalidJibimoTransactionStatus
      */
     public function isPending(): bool
     {
@@ -63,6 +67,7 @@ class JibimoValidationResult
 
     /**
      * @return bool
+     * @throws InvalidJibimoTransactionStatus
      */
     public function isRejected(): bool
     {
@@ -87,6 +92,7 @@ class JibimoValidationResult
 
     /**
      * @return string|null
+     * @throws InvalidJibimoTransactionStatus
      */
     public function getStatus(): ?string
     {
@@ -116,6 +122,7 @@ class JibimoValidationResult
     /**
      * @param string $status
      * @return bool
+     * @throws InvalidJibimoTransactionStatus
      */
     private function safeStatusCheck(string $status): bool {
         return ($this->isValid() and $this->getStatus() === $status);

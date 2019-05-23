@@ -1,52 +1,55 @@
 <?php
 
 
-namespace puresoft\jibimo\models;
+namespace puresoft\jibimo\models\request;
 
 
 use puresoft\jibimo\exceptions\InvalidJibimoPrivacyLevel;
 use puresoft\jibimo\exceptions\InvalidJibimoTransactionStatus;
 use puresoft\jibimo\exceptions\InvalidMobileNumberException;
-use puresoft\jibimo\internals\DataNormalizer;
+use puresoft\jibimo\models\AbstractTransactionResponse;
+use puresoft\jibimo\models\WithPayer;
 
-class PayTransactionResponse extends AbstractTransactionResponse
+class RequestTransactionResponse extends AbstractTransactionResponse
 {
-    private $payee;
+    use WithPayer;
 
+    private $redirect;
 
     /**
-     * PayTransactionResponse constructor.
+     * RequestTransactionResponse constructor.
      * @param string $raw
      * @param int $transactionId
      * @param string $trackerId
      * @param int $amount
-     * @param string $payee
+     * @param string $payer
      * @param string $privacy
      * @param string $status
      * @param string $createdAt
      * @param string $updatedAt
+     * @param string $redirect
      * @param string|null $description
      * @throws InvalidJibimoPrivacyLevel
-     * @throws InvalidJibimoTransactionStatus
      * @throws InvalidMobileNumberException
+     * @throws InvalidJibimoTransactionStatus
      */
-    public function __construct(string $raw, int $transactionId, string $trackerId, int $amount, string $payee,
-                                string $privacy, string $status, string $createdAt, string $updatedAt,
+    public function __construct(string $raw, int $transactionId, string $trackerId, int $amount, string $payer,
+                                string $privacy, string $status, string $createdAt, string $updatedAt, string $redirect,
                                 ?string $description = null)
     {
         parent::__construct($raw, $transactionId, $trackerId, $amount, $privacy, $status, $createdAt,
             $updatedAt, $description);
 
-        $this->payee = DataNormalizer::normalizeMobileNumber($payee);
+        $this->redirect = $redirect;
+        $this->setPayer($payer);
     }
 
     /**
      * @return string
-     * @throws InvalidMobileNumberException
      */
-    public function getPayee(): string
+    public function getRedirectUrl(): string
     {
-        return DataNormalizer::normalizeMobileNumber($this->payee);
+        return $this->redirect;
     }
 
 }

@@ -1,18 +1,22 @@
 <?php
 
 
-namespace puresoft\jibimo\models;
+namespace puresoft\jibimo\models\pay;
 
 
 use puresoft\jibimo\exceptions\InvalidJibimoPrivacyLevel;
 use puresoft\jibimo\exceptions\InvalidJibimoTransactionStatus;
 use puresoft\jibimo\exceptions\InvalidMobileNumberException;
+use puresoft\jibimo\internals\DataNormalizer;
+use puresoft\jibimo\models\AbstractTransactionResponse;
 
-class ExtendedPayTransactionResponse extends PayTransactionResponse
+class PayTransactionResponse extends AbstractTransactionResponse
 {
+    private $payee;
+
 
     /**
-     * ExtendedPayTransactionResponse constructor.
+     * PayTransactionResponse constructor.
      * @param string $raw
      * @param int $transactionId
      * @param string $trackerId
@@ -31,7 +35,19 @@ class ExtendedPayTransactionResponse extends PayTransactionResponse
                                 string $privacy, string $status, string $createdAt, string $updatedAt,
                                 ?string $description = null)
     {
-        parent::__construct($raw, $transactionId, $trackerId, $amount, $payee, $privacy, $status, $createdAt,
+        parent::__construct($raw, $transactionId, $trackerId, $amount, $privacy, $status, $createdAt,
             $updatedAt, $description);
+
+        $this->payee = DataNormalizer::normalizeMobileNumber($payee);
     }
+
+    /**
+     * @return string
+     * @throws InvalidMobileNumberException
+     */
+    public function getPayee(): string
+    {
+        return DataNormalizer::normalizeMobileNumber($this->payee);
+    }
+
 }
