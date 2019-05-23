@@ -29,28 +29,44 @@ class JibimoValidator
      * @param int $transactionId The ID of a money request transaction that you requested before.
      * @param int $amount
      * @param string $mobileNumber
-     * @return bool Transaction validation result.
+     * @param string $trackerId
+     * @return JibimoValidationResult
      * @throws exceptions\CurlResultFailedException
      * @throws exceptions\InvalidJibimoPrivacyLevel
      * @throws exceptions\InvalidMobileNumberException
+     * @throws exceptions\InvalidJibimoTransactionStatus
      */
-    public function validateRequestTransaction(int $transactionId, int $amount, string $mobileNumber): bool
+    public function validateRequestTransaction(int $transactionId, int $amount, string $mobileNumber, string $trackerId)
     {
         $curlResult = Request::validateRequest($this->baseUrl, $this->token, $transactionId);
-
-        // TODO : Check API errors and http status code here
 
         $rawResult = $curlResult->getResult();
 
         $jsonResult = json_decode($rawResult);
 
+
+        if(empty($jsonResult->id) or $curlResult->getHttpStatusCode() !== 200) {
+
+            // Response is not a transaction
+            return new JibimoValidationResult($rawResult, false);
+
+        }
+
         $response = new TransactionVerificationResponse($rawResult, $jsonResult->id, $jsonResult->tracker_id,
             $jsonResult->amount, $jsonResult->payer, $jsonResult->privacy, $jsonResult->status,
             $jsonResult->created_at->date, $jsonResult->updated_at->date, $jsonResult->description);
 
-        var_dump($response);
 
-        // TODO: Check response here, status must be Accepted
-        return false;
+        if($response->getTransactionId() === $transactionId and $response->getAmount() === $amount
+            and $response->getPayer() === $mobileNumber and $response->getTrackerId() === $trackerId) {
+
+            // Transaction details is valid, but its status may be vary
+
+            return new JibimoValidationResult($rawResult, true, $response->getStatus(), $response);
+
+        }
+
+        // Transaction details is invalid, there is not transaction with that details
+        return new JibimoValidationResult($rawResult, false);
     }
 }

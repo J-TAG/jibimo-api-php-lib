@@ -5,8 +5,10 @@ namespace puresoft\jibimo\internals;
 
 
 use puresoft\jibimo\exceptions\InvalidJibimoPrivacyLevel;
+use puresoft\jibimo\exceptions\InvalidJibimoTransactionStatus;
 use puresoft\jibimo\exceptions\InvalidMobileNumberException;
 use puresoft\jibimo\JibimoPrivacyLevel;
+use puresoft\jibimo\JibimoTransactionStatus;
 
 class DataNormalizer
 {
@@ -65,7 +67,7 @@ class DataNormalizer
     }
 
     /**
-     * This method will normalize s Jibimo privacy level string for you.
+     * This method will normalize a Jibimo privacy level string for you.
      * @param string $privacyLevel Jibimo privacy level to normalize.
      * @return string Normalized Jibimo privacy level.
      * @throws InvalidJibimoPrivacyLevel
@@ -98,6 +100,42 @@ class DataNormalizer
         // Privacy level is invalid
         throw new InvalidJibimoPrivacyLevel("The provided Jibimo privacy level `$privacyLevel` is invalid. 
         Please use one of `Personal`, `Friend` or `Public`.");
+    }
+
+    /**
+     * This method will normalize a Jibimo transaction status string for you.
+     * @param string $status The Jibimo transaction status to normal.
+     * @return string Normalized Jibimo transaction status.
+     * @throws InvalidJibimoTransactionStatus
+     */
+    public static function normalizeTransactionStatus(string $status): string
+    {
+        // Return correctly formatted items first of all
+        switch ($status) {
+            case JibimoTransactionStatus::REJECTED:
+            case JibimoTransactionStatus::PENDING:
+            case JibimoTransactionStatus::ACCEPTED:
+                return $status;
+        }
+
+        // Remove extra whitespaces
+        $trimmedStatus = trim($status);
+        // Turn text into lowercase for better comparision
+        $loweredStatus = strtolower($trimmedStatus);
+
+        // If problem is string case sensitivity, we can correct it
+        switch ($loweredStatus) {
+            case strtolower(JibimoTransactionStatus::REJECTED):
+                return JibimoTransactionStatus::REJECTED;
+            case strtolower(JibimoTransactionStatus::PENDING):
+                return JibimoTransactionStatus::PENDING;
+            case strtolower(JibimoTransactionStatus::ACCEPTED):
+                return JibimoTransactionStatus::ACCEPTED;
+        }
+
+        // Status is invalid
+        throw new InvalidJibimoTransactionStatus("The provided Jibimo transaction status `$status` is unknown. 
+        It must be one of `Rejected`, `Pending` or `Accepted`.");
     }
 
     /**
