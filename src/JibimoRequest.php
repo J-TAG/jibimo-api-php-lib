@@ -5,6 +5,7 @@ namespace puresoft\jibimo;
 
 
 use puresoft\jibimo\api\Request;
+use puresoft\jibimo\exceptions\InvalidJibimoResponse;
 use puresoft\jibimo\models\RequestTransactionRequest;
 use puresoft\jibimo\models\RequestTransactionResponse;
 
@@ -22,7 +23,10 @@ class JibimoRequest
      * @param RequestTransactionRequest $request The object request transaction which is contains its request data to be
      * send to Jibimo API.
      * @return RequestTransactionResponse An object that will have data about response of this request.
+     * @throws InvalidJibimoResponse
      * @throws exceptions\CurlResultFailedException
+     * @throws exceptions\InvalidJibimoPrivacyLevel
+     * @throws exceptions\InvalidMobileNumberException
      */
     public function request(RequestTransactionRequest $request)
     {
@@ -33,9 +37,18 @@ class JibimoRequest
             $request->getReturnUrl());
 
         $rawResult = $curlResponse->getResult();
+        $httpStatusCode = $curlResponse->getHttpStatusCode();
 
-        // TODO Handle API error messages
         $jsonResult = json_decode($rawResult);
+
+        if(empty($jsonResult->id) or $httpStatusCode !== 200) {
+
+            // Response is not a transaction
+
+            throw new InvalidJibimoResponse("Unexpected result received from Jibimo API: HTTP status: $httpStatusCode.
+            Raw result: `$rawResult`");
+
+        }
 
         // Convert raw response data to relevant object
         $response = new RequestTransactionResponse($rawResult, $jsonResult->id, $jsonResult->tracker_id,
@@ -46,6 +59,22 @@ class JibimoRequest
         $this->response = $response;
 
         return $response;
+    }
+
+    /**
+     * @return RequestTransactionRequest
+     */
+    public function getRequest(): RequestTransactionRequest
+    {
+        return $this->request;
+    }
+
+    /**
+     * @return RequestTransactionResponse
+     */
+    public function getResponse(): RequestTransactionResponse
+    {
+        return $this->response;
     }
 
 }

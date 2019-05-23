@@ -34,7 +34,6 @@ class JibimoValidator
      * @throws exceptions\CurlResultFailedException
      * @throws exceptions\InvalidJibimoPrivacyLevel
      * @throws exceptions\InvalidMobileNumberException
-     * @throws exceptions\InvalidJibimoTransactionStatus
      */
     public function validateRequestTransaction(int $transactionId, int $amount, string $mobileNumber, string $trackerId)
     {
@@ -48,7 +47,7 @@ class JibimoValidator
         if(empty($jsonResult->id) or $curlResult->getHttpStatusCode() !== 200) {
 
             // Response is not a transaction
-            return new JibimoValidationResult($rawResult, false);
+            return new JibimoValidationResult($curlResult, false);
 
         }
 
@@ -62,11 +61,11 @@ class JibimoValidator
 
             // Transaction details is valid, but its status may be vary
 
-            return new JibimoValidationResult($rawResult, true, $response->getStatus(), $response);
+            return new JibimoValidationResult($curlResult, true, $response);
 
         }
 
         // Transaction details is invalid, there is not transaction with that details
-        return new JibimoValidationResult($rawResult, false);
+        return new JibimoValidationResult($curlResult, false);
     }
 }

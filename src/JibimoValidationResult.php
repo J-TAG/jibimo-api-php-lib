@@ -4,33 +4,25 @@
 namespace puresoft\jibimo;
 
 
-use puresoft\jibimo\exceptions\InvalidJibimoTransactionStatus;
-use puresoft\jibimo\internals\DataNormalizer;
+use puresoft\jibimo\internals\CurlResult;
 use puresoft\jibimo\models\TransactionVerificationResponse;
 
 class JibimoValidationResult
 {
-    private $raw;
+    private $curlResult;
     private $isValid;
-    private $status;
     private $response;
 
     /**
      * JibimoValidationResult constructor.
-     * @param string $raw
+     * @param CurlResult $curlResult
      * @param bool $isValid
-     * @param string|null $status
      * @param TransactionVerificationResponse|null $response
-     * @throws InvalidJibimoTransactionStatus
      */
-    public function __construct(string $raw, bool $isValid, ?string $status = null, ?TransactionVerificationResponse $response = null)
+    public function __construct(CurlResult $curlResult, bool $isValid, ?TransactionVerificationResponse $response = null)
     {
-        $this->raw = $raw;
+        $this->curlResult = $curlResult;
         $this->isValid = $isValid;
-
-        if(isset($status)) {
-            $this->status = DataNormalizer::normalizeTransactionStatus($status);
-        }
 
         if(isset($response)) {
             $this->response = $response;
@@ -55,7 +47,6 @@ class JibimoValidationResult
 
     /**
      * @return bool
-     * @throws exceptions\InvalidJibimoTransactionStatus
      */
     public function isAccepted(): bool
     {
@@ -64,7 +55,6 @@ class JibimoValidationResult
 
     /**
      * @return bool
-     * @throws exceptions\InvalidJibimoTransactionStatus
      */
     public function isPending(): bool
     {
@@ -73,7 +63,6 @@ class JibimoValidationResult
 
     /**
      * @return bool
-     * @throws exceptions\InvalidJibimoTransactionStatus
      */
     public function isRejected(): bool
     {
@@ -85,20 +74,23 @@ class JibimoValidationResult
      */
     public function getRawResponse(): string
     {
-        return $this->raw;
+        return $this->curlResult->getResult();
+    }
+
+    /**
+     * @return CurlResult
+     */
+    public function getCurlResult(): CurlResult
+    {
+        return $this->curlResult;
     }
 
     /**
      * @return string|null
-     * @throws exceptions\InvalidJibimoTransactionStatus
      */
     public function getStatus(): ?string
     {
-        if(isset($this->status)) {
-            return DataNormalizer::normalizeTransactionStatus($this->status);
-        }
-
-        return null;
+        return $this->getCurlResult()->getHttpStatusCode();
     }
 
     /**
@@ -120,7 +112,6 @@ class JibimoValidationResult
     /**
      * @param string $status
      * @return bool
-     * @throws InvalidJibimoTransactionStatus
      */
     private function safeStatusCheck(string $status): bool {
         return ($this->isValid() and $this->getStatus() === $status);
