@@ -4,7 +4,7 @@
 namespace puresoft\jibimo\models\request;
 
 
-use puresoft\jibimo\exceptions\InvalidJibimoPrivacyLevel;
+use puresoft\jibimo\exceptions\InvalidJibimoPrivacyLevelException;
 use puresoft\jibimo\exceptions\InvalidMobileNumberException;
 use puresoft\jibimo\models\AbstractTransactionRequest;
 
@@ -23,7 +23,7 @@ class RequestTransactionRequest extends AbstractTransactionRequest
      * @param string|null $description Descriptions of transaction which will be show up in Jibimo.
      * @param string|null $returnUrl The URL to return after payment. If you leave this URL blank, Jibimo will redirect
      * user to your company homepage.
-     * @throws InvalidJibimoPrivacyLevel
+     * @throws InvalidJibimoPrivacyLevelException
      * @throws InvalidMobileNumberException
      */
     public function __construct(string $baseUrl, string $token, string $mobileNumber, int $amount, string $privacy,

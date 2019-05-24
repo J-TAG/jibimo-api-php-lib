@@ -4,7 +4,7 @@
 namespace puresoft\jibimo\payment;
 
 
-use puresoft\jibimo\exceptions\InvalidJibimoResponse;
+use puresoft\jibimo\exceptions\InvalidJibimoResponseException;
 use puresoft\jibimo\internals\CurlResult;
 use puresoft\jibimo\models\AbstractTransactionRequest;
 use puresoft\jibimo\models\AbstractTransactionResponse;
@@ -20,7 +20,7 @@ abstract class AbstractTransactionProvider
     /**
      * @param CurlResult $curlResult
      * @return mixed
-     * @throws InvalidJibimoResponse
+     * @throws InvalidJibimoResponseException
      */
     protected function convertRawDataToJson(CurlResult $curlResult) {
         $rawResult = $curlResult->getResult();
@@ -32,7 +32,7 @@ abstract class AbstractTransactionProvider
 
             // Response is not a transaction
 
-            throw new InvalidJibimoResponse("Unexpected result received from Jibimo API: HTTP status: $httpStatusCode.
+            throw new InvalidJibimoResponseException("Unexpected result received from Jibimo API: HTTP status: $httpStatusCode.
             Raw result: `$rawResult`");
 
         }

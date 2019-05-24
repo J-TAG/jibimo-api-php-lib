@@ -4,8 +4,8 @@
 namespace puresoft\jibimo\models\request;
 
 
-use puresoft\jibimo\exceptions\InvalidJibimoPrivacyLevel;
-use puresoft\jibimo\exceptions\InvalidJibimoTransactionStatus;
+use puresoft\jibimo\exceptions\InvalidJibimoPrivacyLevelException;
+use puresoft\jibimo\exceptions\InvalidJibimoTransactionStatusException;
 use puresoft\jibimo\exceptions\InvalidMobileNumberException;
 use puresoft\jibimo\models\AbstractTransactionResponse;
 use puresoft\jibimo\models\WithPayer;
@@ -29,9 +29,9 @@ class RequestTransactionResponse extends AbstractTransactionResponse
      * @param string $updatedAt
      * @param string $redirect
      * @param string|null $description
-     * @throws InvalidJibimoPrivacyLevel
+     * @throws InvalidJibimoPrivacyLevelException
      * @throws InvalidMobileNumberException
-     * @throws InvalidJibimoTransactionStatus
+     * @throws InvalidJibimoTransactionStatusException
      */
     public function __construct(string $raw, int $transactionId, string $trackerId, int $amount, string $payer,
                                 string $privacy, string $status, string $createdAt, string $updatedAt, string $redirect,

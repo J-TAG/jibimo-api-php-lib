@@ -6,7 +6,7 @@ namespace puresoft\jibimo\exceptions;
 
 use Exception;
 
-class InvalidJibimoTransactionStatus extends Exception
+class InvalidJibimoTransactionStatusException extends Exception
 {
 
 }

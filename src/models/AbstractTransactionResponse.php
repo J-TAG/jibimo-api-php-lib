@@ -4,8 +4,8 @@
 namespace puresoft\jibimo\models;
 
 
-use puresoft\jibimo\exceptions\InvalidJibimoPrivacyLevel;
-use puresoft\jibimo\exceptions\InvalidJibimoTransactionStatus;
+use puresoft\jibimo\exceptions\InvalidJibimoPrivacyLevelException;
+use puresoft\jibimo\exceptions\InvalidJibimoTransactionStatusException;
 use puresoft\jibimo\internals\DataNormalizer;
 
 abstract class AbstractTransactionResponse
@@ -31,8 +31,8 @@ abstract class AbstractTransactionResponse
      * @param string $createdAt
      * @param string $updatedAt
      * @param string|null $description
-     * @throws InvalidJibimoPrivacyLevel
-     * @throws InvalidJibimoTransactionStatus
+     * @throws InvalidJibimoPrivacyLevelException
+     * @throws InvalidJibimoTransactionStatusException
      */
     public function __construct(string $raw, int $transactionId, string $trackerId, int $amount, string $privacy,
                                 string $status, string $createdAt, string $updatedAt,
@@ -83,7 +83,7 @@ abstract class AbstractTransactionResponse
 
     /**
      * @return string
-     * @throws InvalidJibimoPrivacyLevel
+     * @throws InvalidJibimoPrivacyLevelException
      */
     public function getPrivacy(): string
     {
@@ -92,7 +92,7 @@ abstract class AbstractTransactionResponse
 
     /**
      * @return string
-     * @throws InvalidJibimoTransactionStatus
+     * @throws InvalidJibimoTransactionStatusException
      */
     public function getStatus(): string
     {

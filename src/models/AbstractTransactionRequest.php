@@ -4,7 +4,7 @@
 namespace puresoft\jibimo\models;
 
 
-use puresoft\jibimo\exceptions\InvalidJibimoPrivacyLevel;
+use puresoft\jibimo\exceptions\InvalidJibimoPrivacyLevelException;
 use puresoft\jibimo\exceptions\InvalidMobileNumberException;
 use puresoft\jibimo\internals\DataNormalizer;
 
@@ -28,7 +28,7 @@ abstract class AbstractTransactionRequest
      * @param string $privacy Jibimo privacy level of transaction which could be one of `Public`, `Friend` or `Personal`.
      * @param string|null $trackerId Tracker ID to be saved in Jibimo and used later for finding transaction.
      * @param string|null $description Descriptions of transaction which will be show up in Jibimo.
-     * @throws InvalidJibimoPrivacyLevel
+     * @throws InvalidJibimoPrivacyLevelException
      * @throws InvalidMobileNumberException
      */
     public function __construct(string $baseUrl, string $token, string $mobileNumber, int $amount, string $privacy,
@@ -78,7 +78,7 @@ abstract class AbstractTransactionRequest
 
     /**
      * @return string
-     * @throws InvalidJibimoPrivacyLevel
+     * @throws InvalidJibimoPrivacyLevelException
      */
     public function getPrivacy(): string
     {

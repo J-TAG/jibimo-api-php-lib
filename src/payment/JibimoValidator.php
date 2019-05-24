@@ -7,9 +7,9 @@ namespace puresoft\jibimo\payment;
 use puresoft\jibimo\api\Pay;
 use puresoft\jibimo\api\Request;
 use puresoft\jibimo\exceptions\CurlResultFailedException;
-use puresoft\jibimo\exceptions\InvalidJibimoPrivacyLevel;
-use puresoft\jibimo\exceptions\InvalidJibimoResponse;
-use puresoft\jibimo\exceptions\InvalidJibimoTransactionStatus;
+use puresoft\jibimo\exceptions\InvalidJibimoPrivacyLevelException;
+use puresoft\jibimo\exceptions\InvalidJibimoResponseException;
+use puresoft\jibimo\exceptions\InvalidJibimoTransactionStatusException;
 use puresoft\jibimo\exceptions\InvalidMobileNumberException;
 use puresoft\jibimo\internals\CurlResult;
 use puresoft\jibimo\models\AbstractTransactionResponse;
@@ -41,10 +41,10 @@ class JibimoValidator extends AbstractTransactionProvider
      * @param string $trackerId
      * @return JibimoValidationResult
      * @throws CurlResultFailedException
-     * @throws InvalidJibimoPrivacyLevel
-     * @throws InvalidJibimoTransactionStatus
+     * @throws InvalidJibimoPrivacyLevelException
+     * @throws InvalidJibimoTransactionStatusException
      * @throws InvalidMobileNumberException
-     * @throws InvalidJibimoResponse
+     * @throws InvalidJibimoResponseException
      */
     public function validateRequestTransaction(int $transactionId, int $amount, string $mobileNumber, string $trackerId)
         : JibimoValidationResult
@@ -70,9 +70,9 @@ class JibimoValidator extends AbstractTransactionProvider
      * @param string $trackerId
      * @return JibimoValidationResult CURL execution result.
      * @throws CurlResultFailedException
-     * @throws InvalidJibimoPrivacyLevel
-     * @throws InvalidJibimoResponse
-     * @throws InvalidJibimoTransactionStatus
+     * @throws InvalidJibimoPrivacyLevelException
+     * @throws InvalidJibimoResponseException
+     * @throws InvalidJibimoTransactionStatusException
      * @throws InvalidMobileNumberException
      */
     public function validatePayTransaction(int $transactionId, int $amount, string $mobileNumber, string $trackerId)
@@ -100,9 +100,9 @@ class JibimoValidator extends AbstractTransactionProvider
      * @param string $trackerId
      * @return JibimoValidationResult CURL execution result.
      * @throws CurlResultFailedException
-     * @throws InvalidJibimoPrivacyLevel
-     * @throws InvalidJibimoResponse
-     * @throws InvalidJibimoTransactionStatus
+     * @throws InvalidJibimoPrivacyLevelException
+     * @throws InvalidJibimoResponseException
+     * @throws InvalidJibimoTransactionStatusException
      * @throws InvalidMobileNumberException
      */
     public function validateExtendedPayTransaction(int $transactionId, int $amount, string $mobileNumber,

@@ -6,7 +6,7 @@ namespace puresoft\jibimo\exceptions;
 
 use Exception;
 
-class InvalidJibimoResponse extends Exception
+class InvalidIbanException extends Exception
 {
 
 }

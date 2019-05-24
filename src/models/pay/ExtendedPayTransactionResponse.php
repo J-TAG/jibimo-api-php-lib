@@ -4,8 +4,8 @@
 namespace puresoft\jibimo\models\pay;
 
 
-use puresoft\jibimo\exceptions\InvalidJibimoPrivacyLevel;
-use puresoft\jibimo\exceptions\InvalidJibimoTransactionStatus;
+use puresoft\jibimo\exceptions\InvalidJibimoPrivacyLevelException;
+use puresoft\jibimo\exceptions\InvalidJibimoTransactionStatusException;
 use puresoft\jibimo\exceptions\InvalidMobileNumberException;
 
 class ExtendedPayTransactionResponse extends PayTransactionResponse
@@ -23,8 +23,8 @@ class ExtendedPayTransactionResponse extends PayTransactionResponse
      * @param string $createdAt
      * @param string $updatedAt
      * @param string|null $description
-     * @throws InvalidJibimoPrivacyLevel
-     * @throws InvalidJibimoTransactionStatus
+     * @throws InvalidJibimoPrivacyLevelException
+     * @throws InvalidJibimoTransactionStatusException
      * @throws InvalidMobileNumberException
      */
     public function __construct(string $raw, int $transactionId, string $trackerId, int $amount, string $payee,

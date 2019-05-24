@@ -4,8 +4,10 @@
 namespace puresoft\jibimo\models\pay;
 
 
-use puresoft\jibimo\exceptions\InvalidJibimoPrivacyLevel;
+use puresoft\jibimo\exceptions\InvalidIbanException;
+use puresoft\jibimo\exceptions\InvalidJibimoPrivacyLevelException;
 use puresoft\jibimo\exceptions\InvalidMobileNumberException;
+use puresoft\jibimo\internals\DataNormalizer;
 
 class ExtendedPayTransactionRequest extends PayTransactionRequest
 {
@@ -26,8 +28,9 @@ class ExtendedPayTransactionRequest extends PayTransactionRequest
      * @param string|null $description Descriptions of transaction which will be show up in Jibimo.
      * @param string|null $name The first name of the person whom you want to pay to.
      * @param string|null $family The last name of the person whom you want to pay to.
-     * @throws InvalidJibimoPrivacyLevel
+     * @throws InvalidJibimoPrivacyLevelException
      * @throws InvalidMobileNumberException
+     * @throws InvalidIbanException
      */
     public function __construct(string $baseUrl, string $token, string $mobileNumber, int $amount, string $privacy,
                                 string $iban, string $trackerId, ?string $description = null, ?string $name = null,
@@ -35,8 +38,7 @@ class ExtendedPayTransactionRequest extends PayTransactionRequest
     {
         parent::__construct($baseUrl, $token, $mobileNumber, $amount, $privacy, $trackerId, $description);
 
-        // TODO: Normalize IBAN here
-        $this->iban = $iban;
+        $this->iban = DataNormalizer::normalizeIban($iban);
         $this->name = $name;
         $this->family = $family;
 
@@ -44,11 +46,11 @@ class ExtendedPayTransactionRequest extends PayTransactionRequest
 
     /**
      * @return string
+     * @throws InvalidIbanException
      */
     public function getIban(): string
     {
-        // TODO: Normalize IBAN here
-        return $this->iban;
+        return DataNormalizer::normalizeIban($this->iban);
     }
 
     /**

@@ -2,8 +2,7 @@
 
 declare(strict_types=1);
 
-namespace unit\payment;
-
+namespace unit;
 
 use PHPUnit\Framework\TestCase;
 use puresoft\jibimo\exceptions\CurlResultFailedException;
@@ -12,13 +11,11 @@ use puresoft\jibimo\exceptions\InvalidJibimoPrivacyLevelException;
 use puresoft\jibimo\exceptions\InvalidJibimoResponseException;
 use puresoft\jibimo\exceptions\InvalidJibimoTransactionStatusException;
 use puresoft\jibimo\exceptions\InvalidMobileNumberException;
-use puresoft\jibimo\models\pay\ExtendedPayTransactionRequest;
-use puresoft\jibimo\models\pay\PayTransactionRequest;
-use puresoft\jibimo\payment\JibimoPay;
+use puresoft\jibimo\Jibimo;
 use puresoft\jibimo\payment\values\JibimoPrivacyLevel;
 use puresoft\jibimo\payment\values\JibimoTransactionStatus;
 
-class JibimoPayTest extends TestCase
+class JibimoTest extends TestCase
 {
     /**
      * @throws CurlResultFailedException
@@ -27,16 +24,26 @@ class JibimoPayTest extends TestCase
      * @throws InvalidJibimoTransactionStatusException
      * @throws InvalidMobileNumberException
      */
-    public function testCanDoNormalPay(): void
+    public function testCanRequestCharge(): void
     {
-        $jibimoPay = new JibimoPay();
+        $response = Jibimo::request($GLOBALS['baseUrl'], $GLOBALS['token'], "+989366061280",
+            850000, JibimoPrivacyLevel::PERSONAL, "85");
 
+        $this->assertEquals(JibimoTransactionStatus::PENDING, $response->getStatus());
+        $this->assertNotNull($response->getRedirectUrl());
+    }
 
-        $request = new PayTransactionRequest($GLOBALS['baseUrl'], $GLOBALS['token'], "+989366061280",
+    /**
+     * @throws CurlResultFailedException
+     * @throws InvalidJibimoPrivacyLevelException
+     * @throws InvalidJibimoResponseException
+     * @throws InvalidJibimoTransactionStatusException
+     * @throws InvalidMobileNumberException
+     */
+    public function testCanPayMoney(): void
+    {
+        $response = Jibimo::pay($GLOBALS['baseUrl'], $GLOBALS['token'], "+989366061280",
             8500, JibimoPrivacyLevel::PERSONAL, "85");
-
-
-        $response = $jibimoPay->pay($request);
 
         $this->assertEquals(JibimoTransactionStatus::ACCEPTED, $response->getStatus());
     }
@@ -49,16 +56,10 @@ class JibimoPayTest extends TestCase
      * @throws InvalidMobileNumberException
      * @throws InvalidIbanException
      */
-    public function testCanDoExtendedPay(): void
+    public function testCanExtendedPayMoneyUsingIban(): void
     {
-        $jibimoPay = new JibimoPay();
-
-
-        $request = new ExtendedPayTransactionRequest($GLOBALS['baseUrl'], $GLOBALS['token'], "+989366061280",
+        $response = Jibimo::extendedPay($GLOBALS['baseUrl'], $GLOBALS['token'], "+989366061280",
             8500, JibimoPrivacyLevel::PERSONAL, "140570028870010133089001", "85");
-
-
-        $response = $jibimoPay->extendedPay($request);
 
         $this->assertEquals(JibimoTransactionStatus::ACCEPTED, $response->getStatus());
     }

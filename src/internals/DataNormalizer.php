@@ -4,8 +4,9 @@
 namespace puresoft\jibimo\internals;
 
 
-use puresoft\jibimo\exceptions\InvalidJibimoPrivacyLevel;
-use puresoft\jibimo\exceptions\InvalidJibimoTransactionStatus;
+use puresoft\jibimo\exceptions\InvalidIbanException;
+use puresoft\jibimo\exceptions\InvalidJibimoPrivacyLevelException;
+use puresoft\jibimo\exceptions\InvalidJibimoTransactionStatusException;
 use puresoft\jibimo\exceptions\InvalidMobileNumberException;
 use puresoft\jibimo\payment\values\JibimoPrivacyLevel;
 use puresoft\jibimo\payment\values\JibimoTransactionStatus;
@@ -70,7 +71,7 @@ class DataNormalizer
      * This method will normalize a Jibimo privacy level string for you.
      * @param string $privacyLevel Jibimo privacy level to normalize.
      * @return string Normalized Jibimo privacy level.
-     * @throws InvalidJibimoPrivacyLevel
+     * @throws InvalidJibimoPrivacyLevelException
      */
     public static function normalizePrivacyLevel(string $privacyLevel): string
     {
@@ -98,15 +99,15 @@ class DataNormalizer
         }
 
         // Privacy level is invalid
-        throw new InvalidJibimoPrivacyLevel("The provided Jibimo privacy level `$privacyLevel` is invalid. 
-        Please use one of `Personal`, `Friend` or `Public`.");
+        throw new InvalidJibimoPrivacyLevelException("The provided Jibimo privacy level `$trimmedPrivacyLevel`
+         is invalid. Please use one of `Personal`, `Friend` or `Public`.");
     }
 
     /**
      * This method will normalize a Jibimo transaction status string for you.
      * @param string $status The Jibimo transaction status to normal.
      * @return string Normalized Jibimo transaction status.
-     * @throws InvalidJibimoTransactionStatus
+     * @throws InvalidJibimoTransactionStatusException
      */
     public static function normalizeTransactionStatus(string $status): string
     {
@@ -134,8 +135,44 @@ class DataNormalizer
         }
 
         // Status is invalid
-        throw new InvalidJibimoTransactionStatus("The provided Jibimo transaction status `$status` is unknown. 
-        It must be one of `Rejected`, `Pending` or `Accepted`.");
+        throw new InvalidJibimoTransactionStatusException("The provided Jibimo transaction status `$trimmedStatus`
+         is unknown. It must be one of `Rejected`, `Pending` or `Accepted`.");
+    }
+
+    /**
+     * @param string $iban
+     * @return string
+     * @throws InvalidIbanException
+     */
+    public static function normalizeIban(string $iban): string
+    {
+        // First normalize digits
+        $englishDigits = self::persianToEnglishNumber($iban);
+
+        // Check to see whether the format of IBAN is correct or not
+        if(strlen($englishDigits) === 24) {
+            // IBAN should not contains `IR`, e.g 140570028870010133089001
+
+            if(is_numeric($englishDigits)) {
+                // IBAN format is correct
+                return $englishDigits;
+            }
+
+        } else if(strlen($englishDigits) === 26) {
+            // IBAN MUST contains `IR`, e.g IR140570028870010133089001
+
+            // In this case IBAN format is correct but contains `IR`, we can drop `IR` from it
+            $irRemovedIban = substr($englishDigits, 2);
+
+            if(is_numeric($irRemovedIban)) {
+                return $irRemovedIban;
+            }
+
+        }
+
+        // IBAN is invalid
+        throw new InvalidIbanException("The provided IBAN `$englishDigits` is malformed. It must be either a 24 numerical
+         digits string or a 26 character string which the last 24 characters are numeric.");
     }
 
     /**
