@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<phpunit bootstrap = "vendor/autoload.php"
+         colors                      = "true"
+         convertErrorsToExceptions   = "true"
+         convertNoticesToExceptions  = "true"
+         convertWarningsToExceptions = "true"
+         processIsolation            = "false"
+         stopOnFailure               = "true">
+
+    <testsuites>
+        <testsuite name="Jibimo API Library Test Suite">
+            <directory>tests</directory>
+        </testsuite>
+    </testsuites>
+
+    <filter>
+        <whitelist>
+            <directory suffix=".php">src/</directory>
+        </whitelist>
+    </filter>
+
+    <php>
+        <env name="APP_ENV" value="testing"/>
+        <var name="baseUrl" value="https://jibimo.com/sandbox/api"/>
+        <var name="token" value="eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6Ijk2OGM5YjNkOTg2YjYxNzJiOTIyYzI1NDFkZjFlMDM5YTgyZGU2OWVkMThmYzMyZWFkYjQwMTBhMmQ0MTdmY2UwYzdjOGI1MmMzN2VjNjc5In0.eyJhdWQiOiI5IiwianRpIjoiOTY4YzliM2Q5ODZiNjE3MmI5MjJjMjU0MWRmMWUwMzlhODJkZTY5ZWQxOGZjMzJlYWRiNDAxMGEyZDQxN2ZjZTBjN2M4YjUyYzM3ZWM2NzkiLCJpYXQiOjE1NTg0NzkxNTgsIm5iZiI6MTU1ODQ3OTE1OCwiZXhwIjoxNTkwMTAxNTU3LCJzdWIiOiI4NTMiLCJzY29wZXMiOlsibWFrZS1yZXF1ZXN0LXRyYW5zYWN0aW9uIiwibWFrZS1wYXktdHJhbnNhY3Rpb24iXX0.VhrlxbGBvdstmpIr-KMenbMAlh_Cwg5eagOwWi6H6KGJtW89dRIpIeoqfiVjJr93WH8HDEAE9TB1Ues88dYVONyUzNp0dAQ9pv8i_f1hA4fUx42F_4Jycchc4ufzmUTEj8WO4j-Nchfyaa1ttUFaN_sD3ElgHpKM0yjy4LZo_KzRZ5URoTQFcbUYJ_9Til_7kQBmwts0z-fAiOABGKxHNVK7fZ05at_y5kdC51MWv5-XqAQRQ_So0D6YNrCj8abjRR0hVOkDIy4gj2VIBP526VWFIER3KZsw9FE9zVzg84AMQjsP6m9iC8dlxN6SplG3K0rtlGh6ogRGxjCarzPuVMIWXjPd2eeyewoc_l08wf5oIZKUtBmQ9L39HRx4XeMrwoJU1nTrLwxdg9Bt_ZLEnkrqhLuPWIJuRHz3ccoJDndQnOKPpBzf9-YPrJuVE3nnxejPFZjYisqRF3rQLn7HzQgNiEULwinbFX9i3bYUWaofOlc-BWcefxvDFrefyWe-FFku0NAMXShO_XgF6V9HXf3JeLjw4y0alVsayhjeuCK29DLXMm54FtGWRxgstsxrhxVhopvHEaDxfi711swdfy4Q-0XaykrNvyaVI8TBwTw4kl-b4QYJdxy5Lp10JcH90yKQwpFivM9qjyXI4T61aE74OVyO4Zc4OSL-F4fypRM"/>
+    </php>
+
+</phpunit>
