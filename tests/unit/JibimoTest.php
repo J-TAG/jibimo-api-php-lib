@@ -63,4 +63,19 @@ class JibimoTest extends TestCase
 
         $this->assertEquals(JibimoTransactionStatus::ACCEPTED, $response->getStatus());
     }
+
+    public function testRequestTransactionValidation(): void
+    {
+        // TODO: Test request transaction validation
+    }
+
+    public function testPayTransactionValidation(): void
+    {
+        // TODO: Test pay transaction validation
+    }
+
+    public function testExtendedPayTransactionValidation(): void
+    {
+        // TODO: Test extended pay transaction validation
+    }
 }

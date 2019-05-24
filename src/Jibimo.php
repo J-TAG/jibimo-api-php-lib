@@ -10,6 +10,9 @@ use puresoft\jibimo\models\pay\PayTransactionRequest;
 use puresoft\jibimo\models\pay\PayTransactionResponse;
 use puresoft\jibimo\models\request\RequestTransactionRequest;
 use puresoft\jibimo\models\request\RequestTransactionResponse;
+use puresoft\jibimo\models\verification\ExtendedPayTransactionVerificationResponse;
+use puresoft\jibimo\models\verification\PayTransactionVerificationResponse;
+use puresoft\jibimo\models\verification\RequestTransactionVerificationResponse;
 use puresoft\jibimo\payment\JibimoPay;
 use puresoft\jibimo\payment\JibimoRequest;
 
@@ -102,4 +105,27 @@ class Jibimo
         return $jibimoPay->extendedPay($request);
     }
 
+    /**
+     * @return RequestTransactionVerificationResponse
+     */
+    public static function validateRequest(): RequestTransactionVerificationResponse
+    {
+        // TODO: Validate request transaction here
+    }
+
+    /**
+     * @return PayTransactionVerificationResponse
+     */
+    public static function validatePay(): PayTransactionVerificationResponse
+    {
+        // TODO: Validate pay transaction here
+    }
+
+    /**
+     * @return ExtendedPayTransactionVerificationResponse
+     */
+    public static function validateExtendedPay(): ExtendedPayTransactionVerificationResponse
+    {
+        // TODO: Validate extended pay transaction here
+    }
 }
