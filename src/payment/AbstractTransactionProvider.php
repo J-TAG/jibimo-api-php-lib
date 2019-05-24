@@ -41,17 +41,17 @@ abstract class AbstractTransactionProvider
     }
 
     /**
-     * @return AbstractTransactionRequest
+     * @return AbstractTransactionRequest|null
      */
-    public function getRequest(): AbstractTransactionRequest
+    public function getRequest(): ?AbstractTransactionRequest
     {
         return $this->request;
     }
 
     /**
-     * @return AbstractTransactionResponse
+     * @return AbstractTransactionResponse|null
      */
-    public function getResponse(): AbstractTransactionResponse
+    public function getResponse(): ?AbstractTransactionResponse
     {
         return $this->response;
     }

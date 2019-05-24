@@ -8,12 +8,16 @@ use puresoft\jibimo\api\Pay;
 use puresoft\jibimo\api\Request;
 use puresoft\jibimo\exceptions\CurlResultFailedException;
 use puresoft\jibimo\exceptions\InvalidJibimoPrivacyLevel;
+use puresoft\jibimo\exceptions\InvalidJibimoResponse;
 use puresoft\jibimo\exceptions\InvalidJibimoTransactionStatus;
 use puresoft\jibimo\exceptions\InvalidMobileNumberException;
 use puresoft\jibimo\internals\CurlResult;
-use puresoft\jibimo\models\verification\TransactionVerificationResponse;
+use puresoft\jibimo\models\AbstractTransactionResponse;
+use puresoft\jibimo\models\verification\ExtendedPayTransactionVerificationResponse;
+use puresoft\jibimo\models\verification\PayTransactionVerificationResponse;
+use puresoft\jibimo\models\verification\RequestTransactionVerificationResponse;
 
-class JibimoValidator
+class JibimoValidator extends AbstractTransactionProvider
 {
     private $baseUrl;
     private $token;
@@ -29,7 +33,6 @@ class JibimoValidator
         $this->token = $token;
     }
 
-
     /**
      * After creating a request transaction. You will need to check the status of that transaction using this method.
      * @param int $transactionId The ID of a money request transaction that you requested before.
@@ -41,31 +44,99 @@ class JibimoValidator
      * @throws InvalidJibimoPrivacyLevel
      * @throws InvalidJibimoTransactionStatus
      * @throws InvalidMobileNumberException
+     * @throws InvalidJibimoResponse
      */
     public function validateRequestTransaction(int $transactionId, int $amount, string $mobileNumber, string $trackerId)
         : JibimoValidationResult
     {
         $curlResult = Request::validateRequest($this->baseUrl, $this->token, $transactionId);
 
-        $rawResult = $curlResult->getResult();
+        $jsonResult = $this->convertRawDataToJson($curlResult);
 
-        $jsonResult = json_decode($rawResult);
-
-
-        if(empty($jsonResult->id) or $curlResult->getHttpStatusCode() !== 200) {
-
-            // Response is not a transaction
-            return new JibimoValidationResult($curlResult, false);
-
-        }
-
-        $response = new TransactionVerificationResponse($rawResult, $jsonResult->id, $jsonResult->tracker_id,
+        $response = new RequestTransactionVerificationResponse($curlResult->getResult(), $jsonResult->id, $jsonResult->tracker_id,
             $jsonResult->amount, $jsonResult->payer, $jsonResult->privacy, $jsonResult->status,
             $jsonResult->created_at->date, $jsonResult->updated_at->date, $jsonResult->description);
 
 
+        return $this->validateAndReturnResult($curlResult, $response, $transactionId, $amount, $response->getPayer(),
+            $mobileNumber, $trackerId);
+    }
+
+    /**
+     * After creating a pay transaction. You will need to check the status of that transaction using this method.
+     * @param int $transactionId The ID of a pay money transaction that you requested before.
+     * @param int $amount
+     * @param string $mobileNumber
+     * @param string $trackerId
+     * @return JibimoValidationResult CURL execution result.
+     * @throws CurlResultFailedException
+     * @throws InvalidJibimoPrivacyLevel
+     * @throws InvalidJibimoResponse
+     * @throws InvalidJibimoTransactionStatus
+     * @throws InvalidMobileNumberException
+     */
+    public function validatePayTransaction(int $transactionId, int $amount, string $mobileNumber, string $trackerId)
+    : JibimoValidationResult
+    {
+        $curlResult = Pay::validatePay($this->baseUrl, $this->token, $transactionId);
+
+        $jsonResult = $this->convertRawDataToJson($curlResult);
+
+        $response = new PayTransactionVerificationResponse($curlResult->getResult(), $jsonResult->id,
+            $jsonResult->tracker_id, $jsonResult->amount, $jsonResult->payee, $jsonResult->privacy, $jsonResult->status,
+            $jsonResult->created_at->date, $jsonResult->updated_at->date, $jsonResult->description);
+
+
+        return $this->validateAndReturnResult($curlResult, $response, $transactionId, $amount, $response->getPayee(),
+            $mobileNumber, $trackerId);
+    }
+
+    /**
+     * After creating an extended pay transaction. You will need to check the status of that transaction using this
+     * method.
+     * @param int $transactionId The ID of an extended pay money transaction that you requested before.
+     * @param int $amount
+     * @param string $mobileNumber
+     * @param string $trackerId
+     * @return JibimoValidationResult CURL execution result.
+     * @throws CurlResultFailedException
+     * @throws InvalidJibimoPrivacyLevel
+     * @throws InvalidJibimoResponse
+     * @throws InvalidJibimoTransactionStatus
+     * @throws InvalidMobileNumberException
+     */
+    public function validateExtendedPayTransaction(int $transactionId, int $amount, string $mobileNumber,
+                                                   string $trackerId): JibimoValidationResult
+    {
+        $curlResult = Pay::validateExtendedPay($this->baseUrl, $this->token, $transactionId);
+
+        $jsonResult = $this->convertRawDataToJson($curlResult);
+
+        $response = new ExtendedPayTransactionVerificationResponse($curlResult->getResult(), $jsonResult->id,
+            $jsonResult->tracker_id, $jsonResult->amount, $jsonResult->payee, $jsonResult->privacy, $jsonResult->status,
+            $jsonResult->created_at->date, $jsonResult->updated_at->date, $jsonResult->description);
+
+        return $this->validateAndReturnResult($curlResult, $response, $transactionId, $amount, $response->getPayee(),
+            $mobileNumber, $trackerId);
+
+    }
+
+    /**
+     * @param CurlResult $curlResult
+     * @param AbstractTransactionResponse $response
+     * @param int $transactionId
+     * @param int $amount
+     * @param string $expectedMobileNumber
+     * @param string $mobileNumber
+     * @param string $trackerId
+     * @return JibimoValidationResult
+     */
+    private function validateAndReturnResult(CurlResult $curlResult, AbstractTransactionResponse $response, int $transactionId, int $amount,
+                                             string $expectedMobileNumber, string $mobileNumber, string $trackerId)
+    : JibimoValidationResult
+    {
         if($response->getTransactionId() === $transactionId and $response->getAmount() === $amount
-            and $response->getPayer() === $mobileNumber and $response->getTrackerId() === $trackerId) {
+            and $expectedMobileNumber === $mobileNumber and $response->getTrackerId() === $trackerId) {
 
             // Transaction details is valid, but its status may be vary
 
@@ -73,32 +144,7 @@ class JibimoValidator
 
         }
 
-        // Transaction details is invalid, there is not transaction with that details
+        // Transaction details is invalid, there is no transaction with that details
         return new JibimoValidationResult($curlResult, false);
-    }
-
-    /**
-     * After creating a pay transaction. You will need to check the status of that transaction using this method.
-     * @param int $transactionId The ID of a pay money transaction that you requested before.
-     * @return CurlResult CURL execution result.
-     * @throws CurlResultFailedException
-     */
-    public function validatePay(int $transactionId): JibimoValidationResult
-    {
-        // TODO: Update code for pay transaction validation
-        return Pay::validatePay($this->baseUrl, $this->token, $transactionId);
-    }
-
-    /**
-     * After creating an extended pay transaction. You will need to check the status of that transaction using this
-     * method.
-     * @param int $transactionId The ID of an extended pay money transaction that you requested before.
-     * @return CurlResult CURL execution result.
-     * @throws CurlResultFailedException
-     */
-    public function extendedPayValidate(int $transactionId): JibimoValidationResult
-    {
-        // TODO: Update code for extended pay transaction validation
-        return Pay::validateExtendedPay($this->baseUrl, $this->token, $transactionId);
     }
 }

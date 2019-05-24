@@ -7,20 +7,16 @@ namespace puresoft\jibimo\models\verification;
 use puresoft\jibimo\exceptions\InvalidJibimoPrivacyLevel;
 use puresoft\jibimo\exceptions\InvalidJibimoTransactionStatus;
 use puresoft\jibimo\exceptions\InvalidMobileNumberException;
-use puresoft\jibimo\models\AbstractTransactionResponse;
-use puresoft\jibimo\models\WithPayer;
 
-class TransactionVerificationResponse extends AbstractTransactionResponse
+class ExtendedPayTransactionVerificationResponse extends PayTransactionVerificationResponse
 {
-    use WithPayer;
-
     /**
-     * TransactionVerificationResponse constructor.
+     * ExtendedPayTransactionVerificationResponse constructor.
      * @param string $raw
      * @param int $transactionId
      * @param string $trackerId
      * @param int $amount
-     * @param string $payer
+     * @param string $payee
      * @param string $privacy
      * @param string $status
      * @param string $createdAt
@@ -30,14 +26,11 @@ class TransactionVerificationResponse extends AbstractTransactionResponse
      * @throws InvalidJibimoTransactionStatus
      * @throws InvalidMobileNumberException
      */
-    public function __construct(string $raw, int $transactionId, string $trackerId, int $amount, string $payer,
+    public function __construct(string $raw, int $transactionId, string $trackerId, int $amount, string $payee,
                                 string $privacy, string $status, string $createdAt, string $updatedAt,
                                 ?string $description = null)
     {
-        parent::__construct($raw, $transactionId, $trackerId, $amount, $privacy, $status, $createdAt,
+        parent::__construct($raw, $transactionId, $trackerId, $amount, $payee, $privacy, $status, $createdAt,
             $updatedAt, $description);
-
-        $this->setPayer($payer);
     }
-
 }

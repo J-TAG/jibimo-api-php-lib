@@ -6,7 +6,7 @@ namespace puresoft\jibimo\payment;
 
 use puresoft\jibimo\exceptions\InvalidJibimoTransactionStatus;
 use puresoft\jibimo\internals\CurlResult;
-use puresoft\jibimo\models\verification\TransactionVerificationResponse;
+use puresoft\jibimo\models\AbstractTransactionResponse;
 use puresoft\jibimo\payment\values\JibimoTransactionStatus;
 
 class JibimoValidationResult
@@ -19,9 +19,9 @@ class JibimoValidationResult
      * JibimoValidationResult constructor.
      * @param CurlResult $curlResult
      * @param bool $isValid
-     * @param TransactionVerificationResponse|null $response
+     * @param AbstractTransactionResponse|null $response
      */
-    public function __construct(CurlResult $curlResult, bool $isValid, ?TransactionVerificationResponse $response = null)
+    public function __construct(CurlResult $curlResult, bool $isValid, ?AbstractTransactionResponse $response = null)
     {
         $this->curlResult = $curlResult;
         $this->isValid = $isValid;
@@ -104,9 +104,9 @@ class JibimoValidationResult
     }
 
     /**
-     * @return TransactionVerificationResponse|null
+     * @return AbstractTransactionResponse|null
      */
-    public function getResponse(): ?TransactionVerificationResponse
+    public function getResponse(): ?AbstractTransactionResponse
     {
         return $this->response;
     }
