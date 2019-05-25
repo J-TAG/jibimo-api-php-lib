@@ -3,8 +3,8 @@
 
 namespace puresoft\jibimo\payment;
 
-
 use puresoft\jibimo\api\Request;
+use puresoft\jibimo\api\RequestService;
 use puresoft\jibimo\exceptions\CurlResultFailedException;
 use puresoft\jibimo\exceptions\InvalidJibimoPrivacyLevelException;
 use puresoft\jibimo\exceptions\InvalidJibimoResponseException;
@@ -15,6 +15,17 @@ use puresoft\jibimo\models\request\RequestTransactionResponse;
 
 class JibimoRequest extends AbstractTransactionProvider
 {
+    /** @var $requestService Request */
+    private $requestService;
+
+    /**
+     * JibimoRequest constructor.
+     * @param $requestService RequestService Request handler object to use.
+     */
+    public function __construct(RequestService $requestService)
+    {
+        $this->requestService = $requestService;
+    }
 
     /**
      * Using this method you can perform a Jibimo request money transaction to a mobile number which may or may not be
@@ -32,7 +43,7 @@ class JibimoRequest extends AbstractTransactionProvider
     {
         $this->request = $request;
 
-        $curlResult = Request::request($request->getBaseUrl(), $request->getToken(), $request->getMobileNumber(),
+        $curlResult = $this->requestService->request($request->getBaseUrl(), $request->getToken(), $request->getMobileNumber(),
             $request->getAmount(), $request->getPrivacy(), $request->getTrackerId(), $request->getDescription(),
             $request->getReturnUrl());
 

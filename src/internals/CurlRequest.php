@@ -6,7 +6,7 @@ namespace puresoft\jibimo\internals;
 
 use puresoft\jibimo\exceptions\CurlResultFailedException;
 
-class CurlRequest
+class CurlRequest implements RequestManagerService
 {
 
     /**
@@ -17,13 +17,13 @@ class CurlRequest
      * @return CurlResult CURL execution result.
      * @throws CurlResultFailedException
      */
-    public static function post(string $url, array $data, array $headers): CurlResult
+    public function post(string $url, array $data, array $headers): CurlResult
     {
         $curlHandler = curl_init();
         curl_setopt($curlHandler, CURLOPT_URL, $url);
 
         // This snippet will convert array key values to a string that will be ready for CURL POST data
-        $concatenatedData = self::concatDataArray($data);
+        $concatenatedData = $this->concatDataArray($data);
 
         curl_setopt($curlHandler, CURLOPT_POSTFIELDS, $concatenatedData);
         curl_setopt($curlHandler, CURLOPT_SSL_VERIFYPEER, true);
@@ -49,7 +49,7 @@ class CurlRequest
      * @return CurlResult CURL execution result.
      * @throws CurlResultFailedException
      */
-    public static function get(string $url, array $headers): CurlResult
+    public function get(string $url, array $headers): CurlResult
     {
         $curlHandler = curl_init($url);
 
@@ -74,7 +74,7 @@ class CurlRequest
      * @param array $data POST Body data.
      * @return string Concatenated data as a string.
      */
-    public static function concatDataArray(array $data): string
+    public function concatDataArray(array $data): string
     {
         // This snippet will convert array key values to a string that will be ready for CURL POST data
         $concatenatedData = implode('&', array_map(
@@ -92,7 +92,7 @@ class CurlRequest
      * @param string $token Jibimo API token.
      * @return array Generated headers as an array.
      */
-    public static function jsonBearerHeader(string $token)
+    public function jsonBearerHeader(string $token): array
     {
         return [
             'Authorization: Bearer ' . trim($token),

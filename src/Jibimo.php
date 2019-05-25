@@ -4,6 +4,9 @@
 namespace puresoft\jibimo;
 
 
+use puresoft\jibimo\api\Pay;
+use puresoft\jibimo\api\Request;
+use puresoft\jibimo\internals\CurlRequest;
 use puresoft\jibimo\models\pay\ExtendedPayTransactionRequest;
 use puresoft\jibimo\models\pay\ExtendedPayTransactionResponse;
 use puresoft\jibimo\models\pay\PayTransactionRequest;
@@ -40,7 +43,7 @@ class Jibimo
                                    string $trackerId, ?string $description = null, ?string $returnUrl = null)
     : RequestTransactionResponse
     {
-        $jibimoRequest = new JibimoRequest();
+        $jibimoRequest = new JibimoRequest(new Request(new CurlRequest()));
 
         $request = new RequestTransactionRequest($baseUrl, $token, $mobileNumber,
             $amountInToman, $privacy, $trackerId, $description, $returnUrl);
@@ -69,7 +72,7 @@ class Jibimo
                                string $trackerId, ?string $description = null)
     : PayTransactionResponse
     {
-        $jibimoPay = new JibimoPay();
+        $jibimoPay = new JibimoPay(new Pay(new CurlRequest()));
 
         $request = new PayTransactionRequest($baseUrl, $token, $mobileNumber,
             $amountInToman, $privacy, $trackerId, $description);
@@ -105,7 +108,7 @@ class Jibimo
                                        ?string $name = null, ?string $family = null)
     : ExtendedPayTransactionResponse
     {
-        $jibimoPay = new JibimoPay();
+        $jibimoPay = new JibimoPay(new Pay(new CurlRequest()));
 
         $request = new ExtendedPayTransactionRequest($baseUrl, $token, $mobileNumber,
             $amountInToman, $privacy, $iban, $trackerId, $description, $name, $family);
@@ -131,7 +134,8 @@ class Jibimo
     public static function validateRequest(string $baseUrl, string $token, int $transactionId, string $mobileNumber,
                                            int $amountInToman, string $trackerId): JibimoValidationResult
     {
-        $jibimoValidator = new JibimoValidator($baseUrl, $token);
+        $jibimoValidator = new JibimoValidator($baseUrl, $token, new Pay(new CurlRequest()),
+            new Request(new CurlRequest()));
 
         return $jibimoValidator->validateRequestTransaction($transactionId, $amountInToman,
             $mobileNumber, $trackerId);
@@ -155,7 +159,8 @@ class Jibimo
     public static function validatePay(string $baseUrl, string $token, int $transactionId, string $mobileNumber,
                                        int $amountInToman, string $trackerId): JibimoValidationResult
     {
-        $jibimoValidator = new JibimoValidator($baseUrl, $token);
+        $jibimoValidator = new JibimoValidator($baseUrl, $token, new Pay(new CurlRequest()),
+            new Request(new CurlRequest()));
 
         return $jibimoValidator->validatePayTransaction($transactionId, $amountInToman, $mobileNumber, $trackerId);
     }
@@ -178,7 +183,8 @@ class Jibimo
     public static function validateExtendedPay(string $baseUrl, string $token, int $transactionId, string $mobileNumber,
                                                int $amountInToman, string $trackerId): JibimoValidationResult
     {
-        $jibimoValidator = new JibimoValidator($baseUrl, $token);
+        $jibimoValidator = new JibimoValidator($baseUrl, $token, new Pay(new CurlRequest()),
+            new Request(new CurlRequest()));
 
         return $jibimoValidator->validateExtendedPayTransaction($transactionId, $amountInToman,
             $mobileNumber, $trackerId);

@@ -7,9 +7,22 @@ namespace puresoft\jibimo\api;
 use puresoft\jibimo\exceptions\CurlResultFailedException;
 use puresoft\jibimo\internals\CurlRequest;
 use puresoft\jibimo\internals\CurlResult;
+use puresoft\jibimo\internals\RequestManagerService;
 
-class Pay
+class Pay implements PayService
 {
+    /** @var $requestManagerService CurlRequest */
+    private $requestManagerService;
+
+    /**
+     * Pay constructor.
+     * @param $requestManagerService RequestManagerService Request handler object to use.
+     */
+    public function __construct(RequestManagerService $requestManagerService)
+    {
+        $this->requestManagerService = $requestManagerService;
+    }
+
 
     /**
      * This function will be used to pay to a user which may or may not be registered in Jibimo.
@@ -23,11 +36,11 @@ class Pay
      * @return CurlResult CURL execution result.
      * @throws CurlResultFailedException
      */
-    public static function pay(string $baseUrl, string $token, string $mobileNumber, int $amount, string $privacy,
-                               string $trackerId, ?string $description = null)
+    public function pay(string $baseUrl, string $token, string $mobileNumber, int $amount, string $privacy,
+                               string $trackerId, ?string $description = null): CurlResult
     {
 
-        $headers = CurlRequest::jsonBearerHeader($token);
+        $headers = $this->requestManagerService->jsonBearerHeader($token);
 
         $data = [
             'mobile_number' => $mobileNumber,
@@ -42,7 +55,7 @@ class Pay
             $data['description'] = $description;
         }
 
-        return CurlRequest::post("$baseUrl/business/pay", $data, $headers);
+        return $this->requestManagerService->post("$baseUrl/business/pay", $data, $headers);
     }
 
     /**
@@ -53,12 +66,12 @@ class Pay
      * @return CurlResult CURL execution result.
      * @throws CurlResultFailedException
      */
-    public static function validatePay(string $baseUrl, string $token, int $transactionId)
+    public function validatePay(string $baseUrl, string $token, int $transactionId): CurlResult
     {
 
-        $headers = CurlRequest::jsonBearerHeader($token);
+        $headers = $this->requestManagerService->jsonBearerHeader($token);
 
-        return CurlRequest::get("$baseUrl/business/pay/$transactionId", $headers);
+        return $this->requestManagerService->get("$baseUrl/business/pay/$transactionId", $headers);
     }
 
     /**
@@ -76,12 +89,12 @@ class Pay
      * @return CurlResult CURL execution result.
      * @throws CurlResultFailedException
      */
-    public static function extendedPay(string $baseUrl, string $token, string $mobileNumber, int $amount, string $privacy,
+    public function extendedPay(string $baseUrl, string $token, string $mobileNumber, int $amount, string $privacy,
                                        string $iban, string $trackerId, ?string $description = null,
-                                       ?string $name = null, ?string $family = null)
+                                       ?string $name = null, ?string $family = null): CurlResult
     {
 
-        $headers = CurlRequest::jsonBearerHeader($token);
+        $headers = $this->requestManagerService->jsonBearerHeader($token);
 
         $data = [
             'mobile_number' => $mobileNumber,
@@ -105,7 +118,7 @@ class Pay
             $data['family'] = $family;
         }
 
-        return CurlRequest::post("$baseUrl/business/extended-pay", $data, $headers);
+        return $this->requestManagerService->post("$baseUrl/business/extended-pay", $data, $headers);
     }
 
     /**
@@ -116,12 +129,12 @@ class Pay
      * @return CurlResult CURL execution result.
      * @throws CurlResultFailedException
      */
-    public static function validateExtendedPay(string $baseUrl, string $token, int $transactionId)
+    public function validateExtendedPay(string $baseUrl, string $token, int $transactionId): CurlResult
     {
 
-        $headers = CurlRequest::jsonBearerHeader($token);
+        $headers = $this->requestManagerService->jsonBearerHeader($token);
 
-        return CurlRequest::get("$baseUrl/business/extended-pay/$transactionId", $headers);
+        return $this->requestManagerService->get("$baseUrl/business/extended-pay/$transactionId", $headers);
     }
 
 }

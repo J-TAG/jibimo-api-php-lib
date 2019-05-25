@@ -5,7 +5,9 @@ namespace puresoft\jibimo\payment;
 
 
 use puresoft\jibimo\api\Pay;
+use puresoft\jibimo\api\PayService;
 use puresoft\jibimo\api\Request;
+use puresoft\jibimo\api\RequestService;
 use puresoft\jibimo\exceptions\CurlResultFailedException;
 use puresoft\jibimo\exceptions\InvalidJibimoPrivacyLevelException;
 use puresoft\jibimo\exceptions\InvalidJibimoResponseException;
@@ -22,15 +24,25 @@ class JibimoValidator extends AbstractTransactionProvider
     private $baseUrl;
     private $token;
 
+    /** @var $payService Pay */
+    private $payService;
+
+    /** @var $requestService Request */
+    private $requestService;
+
     /**
      * JibimoValidator constructor.
      * @param string $baseUrl URL of Jibimo API.
      * @param string $token Jibimo API token.
+     * @param PayService $payService Pay handler object to use.
+     * @param RequestService $requestService Request handler object to use.
      */
-    public function __construct(string $baseUrl, string $token)
+    public function __construct(string $baseUrl, string $token, PayService $payService, RequestService $requestService)
     {
         $this->baseUrl = $baseUrl;
         $this->token = $token;
+        $this->payService = $payService;
+        $this->requestService = $requestService;
     }
 
     /**
@@ -49,7 +61,7 @@ class JibimoValidator extends AbstractTransactionProvider
     public function validateRequestTransaction(int $transactionId, int $amount, string $mobileNumber, string $trackerId)
         : JibimoValidationResult
     {
-        $curlResult = Request::validateRequest($this->baseUrl, $this->token, $transactionId);
+        $curlResult = $this->requestService->validateRequest($this->baseUrl, $this->token, $transactionId);
 
         $jsonResult = $this->convertRawDataToJson($curlResult);
 
@@ -78,7 +90,7 @@ class JibimoValidator extends AbstractTransactionProvider
     public function validatePayTransaction(int $transactionId, int $amount, string $mobileNumber, string $trackerId)
     : JibimoValidationResult
     {
-        $curlResult = Pay::validatePay($this->baseUrl, $this->token, $transactionId);
+        $curlResult = $this->payService->validatePay($this->baseUrl, $this->token, $transactionId);
 
         $jsonResult = $this->convertRawDataToJson($curlResult);
 
@@ -108,7 +120,7 @@ class JibimoValidator extends AbstractTransactionProvider
     public function validateExtendedPayTransaction(int $transactionId, int $amount, string $mobileNumber,
                                                    string $trackerId): JibimoValidationResult
     {
-        $curlResult = Pay::validateExtendedPay($this->baseUrl, $this->token, $transactionId);
+        $curlResult = $this->payService->validateExtendedPay($this->baseUrl, $this->token, $transactionId);
 
         $jsonResult = $this->convertRawDataToJson($curlResult);
 

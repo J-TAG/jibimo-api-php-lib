@@ -5,9 +5,21 @@ namespace puresoft\jibimo\api;
 use puresoft\jibimo\exceptions\CurlResultFailedException;
 use puresoft\jibimo\internals\CurlRequest;
 use puresoft\jibimo\internals\CurlResult;
+use puresoft\jibimo\internals\RequestManagerService;
 
-class Request
+class Request implements RequestService
 {
+    /** @var $requestService CurlRequest */
+    private $requestManagerService;
+
+    /**
+     * Request constructor.
+     * @param $requestManagerService $requestManagerService Request handler object to use.
+     */
+    public function __construct(RequestManagerService $requestManagerService)
+    {
+        $this->requestManagerService = $requestManagerService;
+    }
 
     /**
      * This function will be used to charge a user which may or may not be registered in Jibimo.
@@ -22,11 +34,11 @@ class Request
      * @return CurlResult CURL execution result.
      * @throws CurlResultFailedException
      */
-    public static function request(string $baseUrl, string $token, string $mobileNumber, int $amount, string $privacy,
-                                   string $trackerId, ?string $description = null, ?string $returnUrl = null)
+    public function request(string $baseUrl, string $token, string $mobileNumber, int $amount, string $privacy,
+                                   string $trackerId, ?string $description = null, ?string $returnUrl = null): CurlResult
     {
 
-        $headers = CurlRequest::jsonBearerHeader($token);
+        $headers = $this->requestManagerService->jsonBearerHeader($token);
 
         $data = [
             'mobile_number' => $mobileNumber,
@@ -45,7 +57,7 @@ class Request
             $data['return_url'] = $returnUrl;
         }
 
-        return CurlRequest::post("$baseUrl/business/request_transaction", $data, $headers);
+        return $this->requestManagerService->post("$baseUrl/business/request_transaction", $data, $headers);
     }
 
     /**
@@ -56,11 +68,11 @@ class Request
      * @return CurlResult CURL execution result.
      * @throws CurlResultFailedException
      */
-    public static function validateRequest(string $baseUrl, string $token, int $transactionId)
+    public function validateRequest(string $baseUrl, string $token, int $transactionId): CurlResult
     {
 
-        $headers = CurlRequest::jsonBearerHeader($token);
+        $headers = $this->requestManagerService->jsonBearerHeader($token);
 
-        return CurlRequest::get("$baseUrl/business/request_transaction/$transactionId", $headers);
+        return $this->requestManagerService->get("$baseUrl/business/request_transaction/$transactionId", $headers);
     }
 }

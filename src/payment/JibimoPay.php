@@ -5,6 +5,7 @@ namespace puresoft\jibimo\payment;
 
 
 use puresoft\jibimo\api\Pay;
+use puresoft\jibimo\api\PayService;
 use puresoft\jibimo\exceptions\CurlResultFailedException;
 use puresoft\jibimo\exceptions\InvalidIbanException;
 use puresoft\jibimo\exceptions\InvalidJibimoPrivacyLevelException;
@@ -18,6 +19,18 @@ use puresoft\jibimo\models\pay\PayTransactionResponse;
 
 class JibimoPay extends AbstractTransactionProvider
 {
+    /** @var $payService Pay */
+    private $payService;
+
+    /**
+     * JibimoPay constructor.
+     * @param $payService PayService Pay handler object to use.
+     */
+    public function __construct(PayService $payService)
+    {
+        $this->payService = $payService;
+    }
+
 
     /**
      * Using this method you can perform a Jibimo pay money transaction to a mobile number which may or may not be
@@ -35,7 +48,7 @@ class JibimoPay extends AbstractTransactionProvider
     {
         $this->request = $request;
 
-        $curlResult = Pay::pay($request->getBaseUrl(), $request->getToken(), $request->getMobileNumber(),
+        $curlResult = $this->payService->pay($request->getBaseUrl(), $request->getToken(), $request->getMobileNumber(),
             $request->getAmount(), $request->getPrivacy(), $request->getTrackerId(), $request->getDescription());
 
         $jsonResult = $this->convertRawDataToJson($curlResult);
@@ -66,7 +79,7 @@ class JibimoPay extends AbstractTransactionProvider
     {
         $this->request = $request;
 
-        $curlResult = Pay::extendedPay($request->getBaseUrl(), $request->getToken(), $request->getMobileNumber(),
+        $curlResult = $this->payService->extendedPay($request->getBaseUrl(), $request->getToken(), $request->getMobileNumber(),
             $request->getAmount(), $request->getPrivacy(), $request->getIban(), $request->getTrackerId(),
             $request->getDescription(), $request->getName(), $request->getFamily());
 
