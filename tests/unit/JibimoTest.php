@@ -26,6 +26,16 @@ use puresoft\jibimo\payment\values\JibimoTransactionStatus;
 class JibimoTest extends TestCase
 {
     /**
+     * Test case close up validations.
+     */
+    protected function tearDown(): void
+    {
+        parent::tearDown();
+
+        Mockery::close();
+    }
+
+    /**
      * This method will test a normal request transaction in Jibimo factory class.
      * @throws CurlResultFailedException
      * @throws InvalidJibimoPrivacyLevelException
@@ -110,7 +120,8 @@ class JibimoTest extends TestCase
 
         // Inject mock object
         $response = Jibimo::pay($GLOBALS['baseUrl'], $GLOBALS['token'], "+989366061280",
-            8500, JibimoPrivacyLevel::PERSONAL, "85");
+            8500, JibimoPrivacyLevel::PERSONAL, "85", null,
+            new Pay($curlMockery));
 
         $this->assertEquals(JibimoTransactionStatus::ACCEPTED, $response->getStatus());
     }
