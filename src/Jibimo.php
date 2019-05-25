@@ -10,11 +10,10 @@ use puresoft\jibimo\models\pay\PayTransactionRequest;
 use puresoft\jibimo\models\pay\PayTransactionResponse;
 use puresoft\jibimo\models\request\RequestTransactionRequest;
 use puresoft\jibimo\models\request\RequestTransactionResponse;
-use puresoft\jibimo\models\verification\ExtendedPayTransactionVerificationResponse;
-use puresoft\jibimo\models\verification\PayTransactionVerificationResponse;
-use puresoft\jibimo\models\verification\RequestTransactionVerificationResponse;
 use puresoft\jibimo\payment\JibimoPay;
 use puresoft\jibimo\payment\JibimoRequest;
+use puresoft\jibimo\payment\JibimoValidationResult;
+use puresoft\jibimo\payment\JibimoValidator;
 
 class Jibimo
 {
@@ -106,26 +105,70 @@ class Jibimo
     }
 
     /**
-     * @return RequestTransactionVerificationResponse
+     * @param string $baseUrl
+     * @param string $token
+     * @param int $transactionId
+     * @param string $mobileNumber
+     * @param int $amountInToman
+     * @param string $trackerId
+     * @return JibimoValidationResult
+     * @throws exceptions\CurlResultFailedException
+     * @throws exceptions\InvalidJibimoPrivacyLevelException
+     * @throws exceptions\InvalidJibimoResponseException
+     * @throws exceptions\InvalidJibimoTransactionStatusException
+     * @throws exceptions\InvalidMobileNumberException
      */
-    public static function validateRequest(): RequestTransactionVerificationResponse
+    public static function validateRequest(string $baseUrl, string $token, int $transactionId, string $mobileNumber,
+                                           int $amountInToman, string $trackerId): JibimoValidationResult
     {
-        // TODO: Validate request transaction here
+        $jibimoValidator = new JibimoValidator($baseUrl, $token);
+
+        return $jibimoValidator->validateRequestTransaction($transactionId, $amountInToman,
+            $mobileNumber, $trackerId);
     }
 
     /**
-     * @return PayTransactionVerificationResponse
+     * @param string $baseUrl
+     * @param string $token
+     * @param int $transactionId
+     * @param string $mobileNumber
+     * @param int $amountInToman
+     * @param string $trackerId
+     * @return JibimoValidationResult
+     * @throws exceptions\CurlResultFailedException
+     * @throws exceptions\InvalidJibimoPrivacyLevelException
+     * @throws exceptions\InvalidJibimoResponseException
+     * @throws exceptions\InvalidJibimoTransactionStatusException
+     * @throws exceptions\InvalidMobileNumberException
      */
-    public static function validatePay(): PayTransactionVerificationResponse
+    public static function validatePay(string $baseUrl, string $token, int $transactionId, string $mobileNumber,
+                                       int $amountInToman, string $trackerId): JibimoValidationResult
     {
-        // TODO: Validate pay transaction here
+        $jibimoValidator = new JibimoValidator($baseUrl, $token);
+
+        return $jibimoValidator->validatePayTransaction($transactionId, $amountInToman, $mobileNumber, $trackerId);
     }
 
     /**
-     * @return ExtendedPayTransactionVerificationResponse
+     * @param string $baseUrl
+     * @param string $token
+     * @param int $transactionId
+     * @param string $mobileNumber
+     * @param int $amountInToman
+     * @param string $trackerId
+     * @return JibimoValidationResult
+     * @throws exceptions\CurlResultFailedException
+     * @throws exceptions\InvalidJibimoPrivacyLevelException
+     * @throws exceptions\InvalidJibimoResponseException
+     * @throws exceptions\InvalidJibimoTransactionStatusException
+     * @throws exceptions\InvalidMobileNumberException
      */
-    public static function validateExtendedPay(): ExtendedPayTransactionVerificationResponse
+    public static function validateExtendedPay(string $baseUrl, string $token, int $transactionId, string $mobileNumber,
+                                               int $amountInToman, string $trackerId): JibimoValidationResult
     {
-        // TODO: Validate extended pay transaction here
+        $jibimoValidator = new JibimoValidator($baseUrl, $token);
+
+        return $jibimoValidator->validateExtendedPayTransaction($transactionId, $amountInToman,
+            $mobileNumber, $trackerId);
     }
 }

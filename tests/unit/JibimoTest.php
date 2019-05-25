@@ -12,6 +12,9 @@ use puresoft\jibimo\exceptions\InvalidJibimoResponseException;
 use puresoft\jibimo\exceptions\InvalidJibimoTransactionStatusException;
 use puresoft\jibimo\exceptions\InvalidMobileNumberException;
 use puresoft\jibimo\Jibimo;
+use puresoft\jibimo\models\verification\ExtendedPayTransactionVerificationResponse;
+use puresoft\jibimo\models\verification\PayTransactionVerificationResponse;
+use puresoft\jibimo\models\verification\RequestTransactionVerificationResponse;
 use puresoft\jibimo\payment\values\JibimoPrivacyLevel;
 use puresoft\jibimo\payment\values\JibimoTransactionStatus;
 
@@ -64,18 +67,85 @@ class JibimoTest extends TestCase
         $this->assertEquals(JibimoTransactionStatus::ACCEPTED, $response->getStatus());
     }
 
+    /**
+     * @throws CurlResultFailedException
+     * @throws InvalidJibimoPrivacyLevelException
+     * @throws InvalidJibimoResponseException
+     * @throws InvalidJibimoTransactionStatusException
+     * @throws InvalidMobileNumberException
+     */
     public function testRequestTransactionValidation(): void
     {
-        // TODO: Test request transaction validation
+        $validationResult = Jibimo::validateRequest($GLOBALS['baseUrl'], $GLOBALS['token'], 2421,
+            "+989366061280",85000, "85");
+
+        /** @var $verificationResponse RequestTransactionVerificationResponse */
+        $verificationResponse = $validationResult->getResponse();
+
+        $this->assertTrue($validationResult->isValid());
+        $this->assertTrue($validationResult->isAccepted());
+        $this->assertEquals(JibimoTransactionStatus::ACCEPTED, $validationResult->getStatus());
+        $this->assertEquals("+989366061280", $verificationResponse->getPayer());
     }
 
+    /**
+     * @throws CurlResultFailedException
+     * @throws InvalidJibimoPrivacyLevelException
+     * @throws InvalidJibimoResponseException
+     * @throws InvalidJibimoTransactionStatusException
+     * @throws InvalidMobileNumberException
+     */
     public function testPayTransactionValidation(): void
     {
-        // TODO: Test pay transaction validation
+        // First create a pay transaction
+
+        $response = Jibimo::pay($GLOBALS['baseUrl'], $GLOBALS['token'], "+989366061280",
+            8500, JibimoPrivacyLevel::PERSONAL, "85");
+
+        $this->assertEquals(JibimoTransactionStatus::ACCEPTED, $response->getStatus());
+
+        // Now verify that Pay transaction
+
+        $validationResult = Jibimo::validatePay($GLOBALS['baseUrl'], $GLOBALS['token'], $response->getTransactionId(),
+            "+989366061280", 8500, "85");
+
+        /** @var $verificationResponse PayTransactionVerificationResponse */
+        $verificationResponse = $validationResult->getResponse();
+
+        $this->assertTrue($validationResult->isValid());
+        $this->assertTrue($validationResult->isAccepted());
+        $this->assertEquals(JibimoTransactionStatus::ACCEPTED, $validationResult->getStatus());
+        $this->assertEquals("+989366061280", $verificationResponse->getPayee());
     }
 
+    /**
+     * @throws CurlResultFailedException
+     * @throws InvalidIbanException
+     * @throws InvalidJibimoPrivacyLevelException
+     * @throws InvalidJibimoResponseException
+     * @throws InvalidJibimoTransactionStatusException
+     * @throws InvalidMobileNumberException
+     */
     public function testExtendedPayTransactionValidation(): void
     {
-        // TODO: Test extended pay transaction validation
+        // First create an extended pay transaction
+
+        $response = Jibimo::extendedPay($GLOBALS['baseUrl'], $GLOBALS['token'], "+989366061280",
+            8500, JibimoPrivacyLevel::PERSONAL, "140570028870010133089001", "85");
+
+        $this->assertEquals(JibimoTransactionStatus::ACCEPTED, $response->getStatus());
+
+        // Now verify that Extended Pay transaction
+
+        $validationResult = Jibimo::validateExtendedPay($GLOBALS['baseUrl'], $GLOBALS['token'],
+            $response->getTransactionId(), "+989366061280",8500, "85");
+
+        /** @var $verificationResponse ExtendedPayTransactionVerificationResponse */
+        $verificationResponse = $validationResult->getResponse();
+
+        $this->assertTrue($validationResult->isValid());
+        $this->assertTrue($validationResult->isAccepted());
+        $this->assertEquals(JibimoTransactionStatus::ACCEPTED, $validationResult->getStatus());
+        $this->assertEquals("+989366061280", $verificationResponse->getPayee());
     }
 }
