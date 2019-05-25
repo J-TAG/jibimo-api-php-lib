@@ -21,12 +21,15 @@ class CurlRequest
     {
         $curlHandler = curl_init();
         curl_setopt($curlHandler, CURLOPT_URL, $url);
+
         // This snippet will convert array key values to a string that will be ready for CURL POST data
         $concatenatedData = self::concatDataArray($data);
+
         curl_setopt($curlHandler, CURLOPT_POSTFIELDS, $concatenatedData);
         curl_setopt($curlHandler, CURLOPT_SSL_VERIFYPEER, true);
         curl_setopt($curlHandler, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($curlHandler, CURLOPT_HTTPHEADER, $headers);
+
         $res = curl_exec($curlHandler);
         $httpStatusCode = curl_getinfo($curlHandler, CURLINFO_HTTP_CODE);
         curl_close($curlHandler);
@@ -49,9 +52,11 @@ class CurlRequest
     public static function get(string $url, array $headers): CurlResult
     {
         $curlHandler = curl_init($url);
+
         curl_setopt($curlHandler, CURLOPT_SSL_VERIFYPEER, true);
         curl_setopt($curlHandler, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($curlHandler, CURLOPT_HTTPHEADER, $headers);
+
         $res = curl_exec($curlHandler);
         $httpStatusCode = curl_getinfo($curlHandler, CURLINFO_HTTP_CODE);
         curl_close($curlHandler);
@@ -83,6 +88,7 @@ class CurlRequest
     }
 
     /**
+     * This function will get a Bearer token and make an array of HTTP headers required for Jibimo API.
      * @param string $token Jibimo API token.
      * @return array Generated headers as an array.
      */

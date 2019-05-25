@@ -18,8 +18,9 @@ abstract class AbstractTransactionProvider
     protected $response;
 
     /**
-     * @param CurlResult $curlResult
-     * @return mixed
+     * This method will convert a CURL result set to JSON object and return it back.
+     * @param CurlResult $curlResult The CURL result set to create JSON object from.
+     * @return mixed JSON object which was created from CURL result.
      * @throws InvalidJibimoResponseException
      */
     protected function convertRawDataToJson(CurlResult $curlResult) {
@@ -28,7 +29,7 @@ abstract class AbstractTransactionProvider
 
         $jsonResult = json_decode($rawResult);
 
-        if(empty($jsonResult->id) or $httpStatusCode !== 200) {
+        if(is_null($jsonResult) or $jsonResult === false or empty($jsonResult->id) or $httpStatusCode !== 200) {
 
             // Response is not a transaction
 
@@ -41,7 +42,9 @@ abstract class AbstractTransactionProvider
     }
 
     /**
-     * @return AbstractTransactionRequest|null
+     * Returns the request transaction object. Note that you can type cast this object to subtypes to get your specific
+     * result.
+     * @return AbstractTransactionRequest|null Request transaction object if it is presented.
      */
     public function getRequest(): ?AbstractTransactionRequest
     {
@@ -49,7 +52,9 @@ abstract class AbstractTransactionProvider
     }
 
     /**
-     * @return AbstractTransactionResponse|null
+     * Returns the response transaction object. Note that you can type cast this object to subtypes to get your specific
+     * result.
+     * @return AbstractTransactionResponse|null Response transaction object if it is presented.
      */
     public function getResponse(): ?AbstractTransactionResponse
     {

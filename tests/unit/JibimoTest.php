@@ -21,6 +21,7 @@ use puresoft\jibimo\payment\values\JibimoTransactionStatus;
 class JibimoTest extends TestCase
 {
     /**
+     * This method will test a normal request transaction in Jibimo factory class.
      * @throws CurlResultFailedException
      * @throws InvalidJibimoPrivacyLevelException
      * @throws InvalidJibimoResponseException
@@ -37,6 +38,7 @@ class JibimoTest extends TestCase
     }
 
     /**
+     * This method will test a normal pay transaction in Jibimo factory class.
      * @throws CurlResultFailedException
      * @throws InvalidJibimoPrivacyLevelException
      * @throws InvalidJibimoResponseException
@@ -52,6 +54,7 @@ class JibimoTest extends TestCase
     }
 
     /**
+     * This method will test an extended pay transaction.
      * @throws CurlResultFailedException
      * @throws InvalidJibimoPrivacyLevelException
      * @throws InvalidJibimoResponseException
@@ -68,6 +71,7 @@ class JibimoTest extends TestCase
     }
 
     /**
+     * This method will test validation of a normal request transaction in Jibimo factory class.
      * @throws CurlResultFailedException
      * @throws InvalidJibimoPrivacyLevelException
      * @throws InvalidJibimoResponseException
@@ -89,6 +93,7 @@ class JibimoTest extends TestCase
     }
 
     /**
+     * This method will test validation of a normal pay transaction in Jibimo factory class.
      * @throws CurlResultFailedException
      * @throws InvalidJibimoPrivacyLevelException
      * @throws InvalidJibimoResponseException
@@ -119,6 +124,7 @@ class JibimoTest extends TestCase
     }
 
     /**
+     * This method will test validation of an extended pay transaction in Jibimo factory class.
      * @throws CurlResultFailedException
      * @throws InvalidIbanException
      * @throws InvalidJibimoPrivacyLevelException

@@ -21,7 +21,8 @@ class CurlResult
     }
 
     /**
-     * @return int
+     * This method will return the HTTP status code of current CURL result.
+     * @return int The HTTP status code.
      */
     public function getHttpStatusCode()
     {
@@ -29,7 +30,8 @@ class CurlResult
     }
 
     /**
-     * @return string
+     * This method will return back the body text of current CURL result.
+     * @return string The body string.
      */
     public function getResult()
     {

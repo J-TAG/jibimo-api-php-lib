@@ -62,7 +62,7 @@ class Pay
     }
 
     /**
-     * This function will be used to directly transfer money from Jibimo to a bank account.
+     * This function will be used to directly transfer money from Jibimo to a bank account using IBAN (Sheba) number.
      * @param string $baseUrl URL of Jibimo API.
      * @param string $token Jibimo API token.
      * @param $mobileNumber string Mobile number of a person whom you want to pay to.

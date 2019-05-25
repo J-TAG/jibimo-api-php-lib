@@ -36,7 +36,8 @@ class RequestTransactionRequest extends AbstractTransactionRequest
     }
 
     /**
-     * @return string|null
+     * Returns the return URL which you are provided to return back to it after finishing transaction.
+     * @return string|null Your provided return URL or `null` if it's not presented by you.
      */
     public function getReturnUrl(): ?string
     {

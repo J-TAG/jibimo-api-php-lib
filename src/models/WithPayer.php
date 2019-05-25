@@ -12,7 +12,8 @@ trait WithPayer
     private $payer;
 
     /**
-     * @param string $payer
+     * Set payer mobile number.
+     * @param string $payer The mobile number of payer.
      * @return void
      * @throws InvalidMobileNumberException
      */
@@ -22,7 +23,8 @@ trait WithPayer
     }
 
     /**
-     * @return string
+     * Returns the mobile number of whom this transaction was charged.
+     * @return string The mobile number string.
      * @throws InvalidMobileNumberException
      */
     public function getPayer(): string

@@ -45,7 +45,8 @@ class ExtendedPayTransactionRequest extends PayTransactionRequest
     }
 
     /**
-     * @return string
+     * Returns associated IBAN with this request.
+     * @return string The IBAN (Sheba) number.
      * @throws InvalidIbanException
      */
     public function getIban(): string
@@ -54,7 +55,8 @@ class ExtendedPayTransactionRequest extends PayTransactionRequest
     }
 
     /**
-     * @return string|null
+     * Returns associated name of IBAN (Sheba) owner with this request if present.
+     * @return string|null The name of person or null if it's not present.
      */
     public function getName(): ?string
     {
@@ -62,7 +64,8 @@ class ExtendedPayTransactionRequest extends PayTransactionRequest
     }
 
     /**
-     * @return string|null
+     * Returns associated family of IBAN (Sheba) owner with this request if present.
+     * @return string|null The family of person or null if it's not present.
      */
     public function getFamily(): ?string
     {

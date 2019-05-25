@@ -14,7 +14,7 @@ use puresoft\jibimo\payment\values\JibimoTransactionStatus;
 class DataNormalizer
 {
     /**
-     * This method will normalize o mobile number for you to use in Jibimo API.
+     * This method will normalize a mobile number for you to use in Jibimo API.
      * @param string $mobileNumber The mobile number to normalize.
      * @return string The normalized mobile number.
      * @throws InvalidMobileNumberException
@@ -140,8 +140,9 @@ class DataNormalizer
     }
 
     /**
-     * @param string $iban
-     * @return string
+     * This function will get an IBAN (Sheba) number and check it if its in correct format and return that back.
+     * @param string $iban The IBAN (Sheba) number to normalize.
+     * @return string The normalized IBAN (Sheba) number.
      * @throws InvalidIbanException
      */
     public static function normalizeIban(string $iban): string
@@ -178,7 +179,7 @@ class DataNormalizer
     /**
      * This method will gets a string which may or may not contain Persian numbers and then convert it to English
      * numbers.
-     * @param string $stringContainsNumber
+     * @param string $stringContainsNumber The string to convert numbers from.
      * @return string The normalized string.
      */
     public static function persianToEnglishNumber(string $stringContainsNumber): string

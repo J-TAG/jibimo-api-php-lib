@@ -25,6 +25,7 @@ use puresoft\jibimo\payment\values\JibimoTransactionStatus;
 class JibimoValidatorTest extends TestCase
 {
     /**
+     * This method will test validation of a request transaction.
      * @throws CurlResultFailedException
      * @throws InvalidJibimoPrivacyLevelException
      * @throws InvalidJibimoResponseException
@@ -48,6 +49,7 @@ class JibimoValidatorTest extends TestCase
     }
 
     /**
+     * This method will test validation of a pay transaction.
      * @throws CurlResultFailedException
      * @throws InvalidJibimoPrivacyLevelException
      * @throws InvalidJibimoTransactionStatusException
@@ -86,6 +88,7 @@ class JibimoValidatorTest extends TestCase
     }
 
     /**
+     * This method will test validation of an extended pay transaction.
      * @throws CurlResultFailedException
      * @throws InvalidJibimoPrivacyLevelException
      * @throws InvalidJibimoResponseException

@@ -20,6 +20,7 @@ use puresoft\jibimo\payment\values\JibimoTransactionStatus;
 class JibimoRequestTest extends TestCase
 {
     /**
+     * This method will test a normal money request transaction.
      * @throws CurlResultFailedException
      * @throws InvalidJibimoPrivacyLevelException
      * @throws InvalidJibimoResponseException

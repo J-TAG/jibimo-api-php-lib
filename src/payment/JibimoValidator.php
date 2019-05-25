@@ -24,8 +24,8 @@ class JibimoValidator extends AbstractTransactionProvider
 
     /**
      * JibimoValidator constructor.
-     * @param string $baseUrl
-     * @param string $token
+     * @param string $baseUrl URL of Jibimo API.
+     * @param string $token Jibimo API token.
      */
     public function __construct(string $baseUrl, string $token)
     {
@@ -36,10 +36,10 @@ class JibimoValidator extends AbstractTransactionProvider
     /**
      * After creating a request transaction. You will need to check the status of that transaction using this method.
      * @param int $transactionId The ID of a money request transaction that you requested before.
-     * @param int $amount
-     * @param string $mobileNumber
-     * @param string $trackerId
-     * @return JibimoValidationResult
+     * @param int $amount Amount of transaction in Toomaans.
+     * @param string $mobileNumber Target mobile number that money was requested from.
+     * @param string $trackerId Tracker ID of that transaction.
+     * @return JibimoValidationResult Validation result object.
      * @throws CurlResultFailedException
      * @throws InvalidJibimoPrivacyLevelException
      * @throws InvalidJibimoTransactionStatusException
@@ -65,10 +65,10 @@ class JibimoValidator extends AbstractTransactionProvider
     /**
      * After creating a pay transaction. You will need to check the status of that transaction using this method.
      * @param int $transactionId The ID of a pay money transaction that you requested before.
-     * @param int $amount
-     * @param string $mobileNumber
-     * @param string $trackerId
-     * @return JibimoValidationResult CURL execution result.
+     * @param int $amount Amount of transaction in Toomaans.
+     * @param string $mobileNumber Target mobile number that money was paid to.
+     * @param string $trackerId Tracker ID of that transaction.
+     * @return JibimoValidationResult Validation result object.
      * @throws CurlResultFailedException
      * @throws InvalidJibimoPrivacyLevelException
      * @throws InvalidJibimoResponseException
@@ -95,10 +95,10 @@ class JibimoValidator extends AbstractTransactionProvider
      * After creating an extended pay transaction. You will need to check the status of that transaction using this
      * method.
      * @param int $transactionId The ID of an extended pay money transaction that you requested before.
-     * @param int $amount
-     * @param string $mobileNumber
-     * @param string $trackerId
-     * @return JibimoValidationResult CURL execution result.
+     * @param int $amount Amount of transaction in Toomaans.
+     * @param string $mobileNumber Target mobile number that money was paid to.
+     * @param string $trackerId Tracker ID of that transaction.
+     * @return JibimoValidationResult Validation result object.
      * @throws CurlResultFailedException
      * @throws InvalidJibimoPrivacyLevelException
      * @throws InvalidJibimoResponseException
@@ -122,14 +122,15 @@ class JibimoValidator extends AbstractTransactionProvider
     }
 
     /**
-     * @param CurlResult $curlResult
-     * @param AbstractTransactionResponse $response
-     * @param int $transactionId
-     * @param int $amount
-     * @param string $expectedMobileNumber
-     * @param string $mobileNumber
-     * @param string $trackerId
-     * @return JibimoValidationResult
+     * This method will do some general checks and returns the validation result object based on input data.
+     * @param CurlResult $curlResult CURL result set object.
+     * @param AbstractTransactionResponse $response Validation API response data object.
+     * @param int $transactionId The ID of that transaction.
+     * @param int $amount Amount of transaction in Toomaans.
+     * @param string $expectedMobileNumber The mobile number that developer expects money was paid to.
+     * @param string $mobileNumber Target mobile number that money was paid to.
+     * @param string $trackerId Tracker ID of that transaction.
+     * @return JibimoValidationResult Generated validation result data object.
      */
     private function validateAndReturnResult(CurlResult $curlResult, AbstractTransactionResponse $response, int $transactionId, int $amount,
                                              string $expectedMobileNumber, string $mobileNumber, string $trackerId)
@@ -139,7 +140,6 @@ class JibimoValidator extends AbstractTransactionProvider
             and $expectedMobileNumber === $mobileNumber and $response->getTrackerId() === $trackerId) {
 
             // Transaction details is valid, but its status may be vary
-
             return new JibimoValidationResult($curlResult, true, $response);
 
         }

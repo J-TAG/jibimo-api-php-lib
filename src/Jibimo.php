@@ -18,15 +18,18 @@ use puresoft\jibimo\payment\JibimoValidator;
 class Jibimo
 {
     /**
-     * @param string $baseUrl
-     * @param string $token
-     * @param string $mobileNumber
-     * @param int $amountInToman
-     * @param string $privacy
-     * @param string $trackerId
-     * @param string|null $description
-     * @param string|null $returnUrl
-     * @return models\request\RequestTransactionResponse
+     * This method will request money from a mobile number whose owner may or may not be registered in Jibimo.
+     * @param string $baseUrl URL of Jibimo API.
+     * @param string $token Jibimo API token.
+     * @param string $mobileNumber Target mobile number that want to request money from.
+     * @param int $amountInToman Amount of transaction in Toomaans.
+     * @param string $privacy Jibimo privacy level of transaction which could be one of `Public`, `Friend` or `Personal`.
+     * @param string $trackerId Tracker ID to be saved in Jibimo and used later for finding transaction. This can be
+     * your factor number.
+     * @param string|null $description Descriptions of transaction which will be show up in Jibimo.
+     * @param string|null $returnUrl The URL to return after payment. If you leave this URL blank, Jibimo will redirect
+     * user to your company homepage.
+     * @return models\request\RequestTransactionResponse Response of Jibimo API in a data model object.
      * @throws exceptions\CurlResultFailedException
      * @throws exceptions\InvalidJibimoPrivacyLevelException
      * @throws exceptions\InvalidJibimoResponseException
@@ -46,14 +49,16 @@ class Jibimo
     }
 
     /**
-     * @param string $baseUrl
-     * @param string $token
-     * @param string $mobileNumber
-     * @param int $amountInToman
-     * @param string $privacy
-     * @param string $trackerId
-     * @param string|null $description
-     * @return PayTransactionResponse
+     * This method will pay money to a mobile number whose owner may or may not be registered in Jibimo.
+     * @param string $baseUrl URL of Jibimo API.
+     * @param string $token Jibimo API token.
+     * @param string $mobileNumber Target mobile number that want to pay money to.
+     * @param int $amountInToman Amount of transaction in Toomaans.
+     * @param string $privacy Jibimo privacy level of transaction which could be one of `Public`, `Friend` or `Personal`.
+     * @param string $trackerId Tracker ID to be saved in Jibimo and used later for finding transaction. This can be
+     * your factor number.
+     * @param string|null $description Descriptions of transaction which will be show up in Jibimo.
+     * @return PayTransactionResponse Response of Jibimo API in a data model object.
      * @throws exceptions\CurlResultFailedException
      * @throws exceptions\InvalidJibimoPrivacyLevelException
      * @throws exceptions\InvalidJibimoResponseException
@@ -73,17 +78,21 @@ class Jibimo
     }
 
     /**
-     * @param string $baseUrl
-     * @param string $token
-     * @param string $mobileNumber
-     * @param int $amountInToman
-     * @param string $privacy
-     * @param string $iban
-     * @param string $trackerId
-     * @param string|null $description
-     * @param string|null $name
-     * @param string|null $family
-     * @return ExtendedPayTransactionResponse
+     * This method will pay money directly to a combination of mobile number and IBAN (Sheba) number whose owner may or
+     * may not be registered in Jibimo and after this transaction money will be automatically transferred to IBAN
+     * owner's bank account using Paya system, which will take up to 72 hours to be transferred.
+     * @param string $baseUrl URL of Jibimo API.
+     * @param string $token Jibimo API token.
+     * @param string $mobileNumber Target mobile number that want to pay money to.
+     * @param int $amountInToman Amount of transaction in Toomaans.
+     * @param string $privacy Jibimo privacy level of transaction which could be one of `Public`, `Friend` or `Personal`.
+     * @param string $iban the IBAN (Sheba) number of who you want to pay money to.
+     * @param string $trackerId Tracker ID to be saved in Jibimo and used later for finding transaction. This can be
+     * your factor number.
+     * @param string|null $description Descriptions of transaction which will be show up in Jibimo.
+     * @param string|null $name First name of IBAN (Sheba) owner.
+     * @param string|null $family Last name of IBAN (Sheba) owner.
+     * @return ExtendedPayTransactionResponse Response of Jibimo API in a data model object.
      * @throws exceptions\CurlResultFailedException
      * @throws exceptions\InvalidIbanException
      * @throws exceptions\InvalidJibimoPrivacyLevelException
@@ -105,13 +114,14 @@ class Jibimo
     }
 
     /**
-     * @param string $baseUrl
-     * @param string $token
-     * @param int $transactionId
-     * @param string $mobileNumber
-     * @param int $amountInToman
-     * @param string $trackerId
-     * @return JibimoValidationResult
+     * This method will validate that if a previous request transaction was attempted successfully or not.
+     * @param string $baseUrl URL of Jibimo API.
+     * @param string $token Jibimo API token.
+     * @param int $transactionId The Jibimo transaction ID of that request transaction that you were made before.
+     * @param string $mobileNumber Target mobile number that money was requested from.
+     * @param int $amountInToman Amount of that previous transaction in Toomaans.
+     * @param string $trackerId Tracker ID of that previous transaction.
+     * @return JibimoValidationResult Validation result object.
      * @throws exceptions\CurlResultFailedException
      * @throws exceptions\InvalidJibimoPrivacyLevelException
      * @throws exceptions\InvalidJibimoResponseException
@@ -128,13 +138,14 @@ class Jibimo
     }
 
     /**
-     * @param string $baseUrl
-     * @param string $token
-     * @param int $transactionId
-     * @param string $mobileNumber
-     * @param int $amountInToman
-     * @param string $trackerId
-     * @return JibimoValidationResult
+     * This method will validate that if a previous pay transaction was attempted successfully or not.
+     * @param string $baseUrl URL of Jibimo API.
+     * @param string $token Jibimo API token.
+     * @param int $transactionId The Jibimo transaction ID of that pay transaction that you were made before.
+     * @param string $mobileNumber Target mobile number that money was paid to.
+     * @param int $amountInToman Amount of that previous transaction in Toomaans.
+     * @param string $trackerId Tracker ID of that previous transaction.
+     * @return JibimoValidationResult Validation result object.
      * @throws exceptions\CurlResultFailedException
      * @throws exceptions\InvalidJibimoPrivacyLevelException
      * @throws exceptions\InvalidJibimoResponseException
@@ -150,13 +161,14 @@ class Jibimo
     }
 
     /**
-     * @param string $baseUrl
-     * @param string $token
-     * @param int $transactionId
-     * @param string $mobileNumber
-     * @param int $amountInToman
-     * @param string $trackerId
-     * @return JibimoValidationResult
+     * This method will validate that if a previous extended pay transaction was attempted successfully or not.
+     * @param string $baseUrl URL of Jibimo API.
+     * @param string $token Jibimo API token.
+     * @param int $transactionId The Jibimo transaction ID of that extended pay transaction that you were made before.
+     * @param string $mobileNumber Target mobile number that money was paid to.
+     * @param int $amountInToman Amount of that previous transaction in Toomaans.
+     * @param string $trackerId Tracker ID of that previous transaction.
+     * @return JibimoValidationResult Validation result object.
      * @throws exceptions\CurlResultFailedException
      * @throws exceptions\InvalidJibimoPrivacyLevelException
      * @throws exceptions\InvalidJibimoResponseException

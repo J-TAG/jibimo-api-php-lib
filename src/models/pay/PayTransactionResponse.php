@@ -17,16 +17,16 @@ class PayTransactionResponse extends AbstractTransactionResponse
 
     /**
      * PayTransactionResponse constructor.
-     * @param string $raw
-     * @param int $transactionId
-     * @param string $trackerId
-     * @param int $amount
-     * @param string $payee
-     * @param string $privacy
-     * @param string $status
-     * @param string $createdAt
-     * @param string $updatedAt
-     * @param string|null $description
+     * @param string $raw Raw response data.
+     * @param int $transactionId Jibimo transaction ID which is unique in Jibimo.
+     * @param string $trackerId Tracker ID which is saved in Jibimo and will be used later for finding transaction.
+     * @param int $amount Amount of money which is paid by this transaction in Toomaans.
+     * @param string $payee Mobile number of person who received the money.
+     * @param string $privacy Jibimo privacy level of transaction which can be one of `Public`, `Friend` or `Personal`.
+     * @param string $status Status of transaction in Jibimo which can be one of `Rejected`, `Pending` or `Accepted`.
+     * @param string $createdAt Exact date time of creating this transaction.
+     * @param string $updatedAt Exact date time that this transaction was modified by someone.
+     * @param string|null $description Descriptions of transaction which will be show up in Jibimo.
      * @throws InvalidJibimoPrivacyLevelException
      * @throws InvalidJibimoTransactionStatusException
      * @throws InvalidMobileNumberException

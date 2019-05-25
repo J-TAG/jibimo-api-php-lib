@@ -53,7 +53,7 @@ class JibimoPay extends AbstractTransactionProvider
     /**
      * Using this method you can perform a Jibimo extended pay money transaction to a mobile number and an IBAN which
      * its owner may or may not be in Jibimo.
-     * @param ExtendedPayTransactionRequest $request
+     * @param ExtendedPayTransactionRequest $request Request data object.
      * @return ExtendedPayTransactionResponse CURL execution result.
      * @throws CurlResultFailedException
      * @throws InvalidJibimoPrivacyLevelException

@@ -12,7 +12,8 @@ trait WithPayee
     private $payee;
 
     /**
-     * @param string $payee
+     * Set payee mobile number.
+     * @param string $payee The mobile number of payee.
      * @return void
      * @throws InvalidMobileNumberException
      */
@@ -22,7 +23,8 @@ trait WithPayee
     }
 
     /**
-     * @return string
+     * Returns the mobile number of who this transaction was paid to.
+     * @return string The mobile number string.
      * @throws InvalidMobileNumberException
      */
     public function getPayee(): string
