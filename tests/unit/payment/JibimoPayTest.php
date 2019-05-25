@@ -47,10 +47,6 @@ class JibimoPayTest extends TestCase
         // Mocked CURL request class
         $curlMockery = Mockery::mock(CurlRequest::class);
 
-        // Request data
-        $request = new PayTransactionRequest($GLOBALS['baseUrl'], $GLOBALS['token'], "+989366061280",
-            8500, JibimoPrivacyLevel::PERSONAL, "85");
-
         // Expected headers
         $headers = [
             'Authorization: Bearer ' . trim($GLOBALS['token']),
@@ -59,10 +55,10 @@ class JibimoPayTest extends TestCase
 
         // Expected data
         $data = [
-            'mobile_number' => $request->getMobileNumber(),
-            'amount' => $request->getAmount(),
-            'privacy' => $request->getPrivacy(),
-            'tracker_id' => $request->getTrackerId(),
+            'mobile_number' => '+989366061280',
+            'amount' => 8500,
+            'privacy' => 'Personal',
+            'tracker_id' => '85',
         ];
 
         // Mock response
@@ -76,9 +72,10 @@ class JibimoPayTest extends TestCase
         $curlMockery->allows()->jsonBearerHeader($GLOBALS['token'])->andReturns($headers);
 
         // Inject mock object
-        $payService = new Pay($curlMockery);
+        $jibimoPay = new JibimoPay(new Pay($curlMockery));
 
-        $jibimoPay = new JibimoPay($payService);
+        $request = new PayTransactionRequest($GLOBALS['baseUrl'], $GLOBALS['token'], "+989366061280",
+            8500, JibimoPrivacyLevel::PERSONAL, "85");
 
         $response = $jibimoPay->pay($request);
 
@@ -96,8 +93,36 @@ class JibimoPayTest extends TestCase
      */
     public function testCanDoExtendedPay(): void
     {
-        $jibimoPay = new JibimoPay();
+        // Mocked CURL request class
+        $curlMockery = Mockery::mock(CurlRequest::class);
 
+        // Expected headers
+        $headers = [
+            'Authorization: Bearer ' . trim($GLOBALS['token']),
+            'Accept: application/json',
+        ];
+
+        // Expected data
+        $data = [
+            'mobile_number' => "+989366061280",
+            'amount' => 8500,
+            'privacy' => 'Personal',
+            'iban' => '140570028870010133089001',
+            'tracker_id' => '85',
+        ];
+
+        // Mock response
+        $mockResponse = new CurlResult(200, '{"id":2520,"tracker_id":"85","amount":8500,
+        "payee":"+989366061280","privacy":"Personal","status":"Accepted","created_at":{"date":"2019-05-25 22:26:19.000000",
+        "timezone_type":3,"timezone":"Asia\/Tehran"},"updated_at":{"date":"2019-05-25 22:26:19.000000","timezone_type":3,
+        "timezone":"Asia\/Tehran"},"description":null}');
+
+        // Mock implementations
+        $curlMockery->allows()->post($GLOBALS['baseUrl'] . "/business/extended-pay", $data, $headers)->andReturns($mockResponse);
+        $curlMockery->allows()->jsonBearerHeader($GLOBALS['token'])->andReturns($headers);
+
+        // Inject mock object
+        $jibimoPay = new JibimoPay(new Pay($curlMockery));
 
         $request = new ExtendedPayTransactionRequest($GLOBALS['baseUrl'], $GLOBALS['token'], "+989366061280",
             8500, JibimoPrivacyLevel::PERSONAL, "140570028870010133089001", "85");

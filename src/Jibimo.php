@@ -5,7 +5,9 @@ namespace puresoft\jibimo;
 
 
 use puresoft\jibimo\api\Pay;
+use puresoft\jibimo\api\PayService;
 use puresoft\jibimo\api\Request;
+use puresoft\jibimo\api\RequestService;
 use puresoft\jibimo\internals\CurlRequest;
 use puresoft\jibimo\models\pay\ExtendedPayTransactionRequest;
 use puresoft\jibimo\models\pay\ExtendedPayTransactionResponse;
@@ -32,6 +34,8 @@ class Jibimo
      * @param string|null $description Descriptions of transaction which will be show up in Jibimo.
      * @param string|null $returnUrl The URL to return after payment. If you leave this URL blank, Jibimo will redirect
      * user to your company homepage.
+     * @param RequestService|null $requestService The request service object to inject, By default it will use default
+     * Jibimo request service along with the CURL handler.
      * @return models\request\RequestTransactionResponse Response of Jibimo API in a data model object.
      * @throws exceptions\CurlResultFailedException
      * @throws exceptions\InvalidJibimoPrivacyLevelException
@@ -40,10 +44,13 @@ class Jibimo
      * @throws exceptions\InvalidMobileNumberException
      */
     public static function request(string $baseUrl, string $token, string $mobileNumber, int $amountInToman, string $privacy,
-                                   string $trackerId, ?string $description = null, ?string $returnUrl = null)
+                                   string $trackerId, ?string $description = null, ?string $returnUrl = null,
+                                   ?RequestService $requestService = null)
     : RequestTransactionResponse
     {
-        $jibimoRequest = new JibimoRequest(new Request(new CurlRequest()));
+        $jibimoRequest = new JibimoRequest(
+            is_null($requestService) ? new Request(new CurlRequest()) : $requestService
+        );
 
         $request = new RequestTransactionRequest($baseUrl, $token, $mobileNumber,
             $amountInToman, $privacy, $trackerId, $description, $returnUrl);
@@ -61,6 +68,8 @@ class Jibimo
      * @param string $trackerId Tracker ID to be saved in Jibimo and used later for finding transaction. This can be
      * your factor number.
      * @param string|null $description Descriptions of transaction which will be show up in Jibimo.
+     * @param PayService|null $payService The pay service object to inject, By default it will use default
+     * Jibimo pay service along with the CURL handler.
      * @return PayTransactionResponse Response of Jibimo API in a data model object.
      * @throws exceptions\CurlResultFailedException
      * @throws exceptions\InvalidJibimoPrivacyLevelException
@@ -69,10 +78,12 @@ class Jibimo
      * @throws exceptions\InvalidMobileNumberException
      */
     public static function pay(string $baseUrl, string $token, string $mobileNumber, int $amountInToman, string $privacy,
-                               string $trackerId, ?string $description = null)
+                               string $trackerId, ?string $description = null, ?PayService $payService = null)
     : PayTransactionResponse
     {
-        $jibimoPay = new JibimoPay(new Pay(new CurlRequest()));
+        $jibimoPay = new JibimoPay(
+            is_null($payService) ? new Pay(new CurlRequest()) : $payService
+        );
 
         $request = new PayTransactionRequest($baseUrl, $token, $mobileNumber,
             $amountInToman, $privacy, $trackerId, $description);
@@ -95,6 +106,8 @@ class Jibimo
      * @param string|null $description Descriptions of transaction which will be show up in Jibimo.
      * @param string|null $name First name of IBAN (Sheba) owner.
      * @param string|null $family Last name of IBAN (Sheba) owner.
+     * @param PayService|null $payService The pay service object to inject, By default it will use default
+     * Jibimo pay service along with the CURL handler.
      * @return ExtendedPayTransactionResponse Response of Jibimo API in a data model object.
      * @throws exceptions\CurlResultFailedException
      * @throws exceptions\InvalidIbanException
@@ -105,10 +118,12 @@ class Jibimo
      */
     public static function extendedPay(string $baseUrl, string $token, string $mobileNumber, int $amountInToman,
                                        string $privacy, string $iban, string $trackerId, ?string $description = null,
-                                       ?string $name = null, ?string $family = null)
+                                       ?string $name = null, ?string $family = null, ?PayService $payService = null)
     : ExtendedPayTransactionResponse
     {
-        $jibimoPay = new JibimoPay(new Pay(new CurlRequest()));
+        $jibimoPay = new JibimoPay(
+            is_null($payService) ? new Pay(new CurlRequest()) : $payService
+        );
 
         $request = new ExtendedPayTransactionRequest($baseUrl, $token, $mobileNumber,
             $amountInToman, $privacy, $iban, $trackerId, $description, $name, $family);
@@ -124,6 +139,10 @@ class Jibimo
      * @param string $mobileNumber Target mobile number that money was requested from.
      * @param int $amountInToman Amount of that previous transaction in Toomaans.
      * @param string $trackerId Tracker ID of that previous transaction.
+     * @param PayService|null $payService The pay service object to inject, By default it will use default
+     * Jibimo pay service along with the CURL handler.
+     * @param RequestService|null $requestService The request service object to inject, By default it will use default
+     * Jibimo request service along with the CURL handler.
      * @return JibimoValidationResult Validation result object.
      * @throws exceptions\CurlResultFailedException
      * @throws exceptions\InvalidJibimoPrivacyLevelException
@@ -132,10 +151,13 @@ class Jibimo
      * @throws exceptions\InvalidMobileNumberException
      */
     public static function validateRequest(string $baseUrl, string $token, int $transactionId, string $mobileNumber,
-                                           int $amountInToman, string $trackerId): JibimoValidationResult
+                                           int $amountInToman, string $trackerId, ?PayService $payService = null,
+                                           ?RequestService $requestService = null): JibimoValidationResult
     {
-        $jibimoValidator = new JibimoValidator($baseUrl, $token, new Pay(new CurlRequest()),
-            new Request(new CurlRequest()));
+        $jibimoValidator = new JibimoValidator($baseUrl, $token,
+            is_null($payService) ? new Pay(new CurlRequest()) : $payService,
+            is_null($requestService) ? new Request(new CurlRequest()) : $requestService
+        );
 
         return $jibimoValidator->validateRequestTransaction($transactionId, $amountInToman,
             $mobileNumber, $trackerId);
@@ -149,6 +171,10 @@ class Jibimo
      * @param string $mobileNumber Target mobile number that money was paid to.
      * @param int $amountInToman Amount of that previous transaction in Toomaans.
      * @param string $trackerId Tracker ID of that previous transaction.
+     * @param PayService|null $payService The pay service object to inject, By default it will use default
+     * Jibimo pay service along with the CURL handler.
+     * @param RequestService|null $requestService The request service object to inject, By default it will use default
+     * Jibimo request service along with the CURL handler.
      * @return JibimoValidationResult Validation result object.
      * @throws exceptions\CurlResultFailedException
      * @throws exceptions\InvalidJibimoPrivacyLevelException
@@ -157,10 +183,13 @@ class Jibimo
      * @throws exceptions\InvalidMobileNumberException
      */
     public static function validatePay(string $baseUrl, string $token, int $transactionId, string $mobileNumber,
-                                       int $amountInToman, string $trackerId): JibimoValidationResult
+                                       int $amountInToman, string $trackerId, ?PayService $payService = null,
+                                       ?RequestService $requestService = null): JibimoValidationResult
     {
-        $jibimoValidator = new JibimoValidator($baseUrl, $token, new Pay(new CurlRequest()),
-            new Request(new CurlRequest()));
+        $jibimoValidator = new JibimoValidator($baseUrl, $token,
+            is_null($payService) ? new Pay(new CurlRequest()) : $payService,
+            is_null($requestService) ? new Request(new CurlRequest()) : $requestService
+        );
 
         return $jibimoValidator->validatePayTransaction($transactionId, $amountInToman, $mobileNumber, $trackerId);
     }
@@ -173,6 +202,10 @@ class Jibimo
      * @param string $mobileNumber Target mobile number that money was paid to.
      * @param int $amountInToman Amount of that previous transaction in Toomaans.
      * @param string $trackerId Tracker ID of that previous transaction.
+     * @param PayService|null $payService The pay service object to inject, By default it will use default
+     * Jibimo pay service along with the CURL handler.
+     * @param RequestService|null $requestService The request service object to inject, By default it will use default
+     * Jibimo request service along with the CURL handler.
      * @return JibimoValidationResult Validation result object.
      * @throws exceptions\CurlResultFailedException
      * @throws exceptions\InvalidJibimoPrivacyLevelException
@@ -181,10 +214,13 @@ class Jibimo
      * @throws exceptions\InvalidMobileNumberException
      */
     public static function validateExtendedPay(string $baseUrl, string $token, int $transactionId, string $mobileNumber,
-                                               int $amountInToman, string $trackerId): JibimoValidationResult
+                                               int $amountInToman, string $trackerId, ?PayService $payService = null,
+                                               ?RequestService $requestService = null): JibimoValidationResult
     {
-        $jibimoValidator = new JibimoValidator($baseUrl, $token, new Pay(new CurlRequest()),
-            new Request(new CurlRequest()));
+        $jibimoValidator = new JibimoValidator($baseUrl, $token,
+            is_null($payService) ? new Pay(new CurlRequest()) : $payService,
+            is_null($requestService) ? new Request(new CurlRequest()) : $requestService
+        );
 
         return $jibimoValidator->validateExtendedPayTransaction($transactionId, $amountInToman,
             $mobileNumber, $trackerId);
