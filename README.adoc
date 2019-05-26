@@ -1,4 +1,4 @@
-= Jibimo API PHP Library
+= 🏢 Jibimo API PHP Library
 Hesam Gholami <hesamgholami@yahoo.com>
 v1.0, 2019-05-26
 
@@ -14,7 +14,7 @@ image:https://img.shields.io/travis/j-tag/jibimo-api-php-lib.svg[Travis (.org)]
 image:https://img.shields.io/github/release/j-tag/jibimo-api-php-lib.svg[GitHub release]
 image:https://img.shields.io/packagist/php-v/puresoft/jibimo-api.svg[PHP from Packagist]
 
-== Quick Start
+== 🎁 Quick Start
 
 Actually this library is a general purpose wrapper around the main Jibimo REST API. So it will provide several data model objects and services to use Jibimo API in PHP easily.
 
@@ -22,7 +22,7 @@ Also this library provides a simple exception handling footprint for you to easi
 
 Below you can see a quick start of how using this package:
 
-=== Installation
+=== 🎩 Installation
 
 Simply install this package using following composer command:
 
@@ -33,13 +33,13 @@ composer require puresoft/jibimo-api --no-dev
 
 So this will check required components of library and install them along with the library itself.
 
-=== Request Money from People
+=== 💵 Request Money from People
 
 For using Jibimo money request API you should first initiate the transaction and redirect user to the gateway, after returning back from gateway you *MUST* validate the transaction, and if the transaction was valid and accepted, you are all set and user was paid you correctly.
 
 Below you can see the instruction:
 
-==== Initiating Transaction and Redirecting User to Gateway
+==== 👍 Initiating Transaction and Redirecting User to Gateway
 
 Use following code to initiate a request transaction and redirect user to gateway:
 
@@ -73,7 +73,7 @@ if(JibimoTransactionStatus::PENDING === $response->getStatus()) {
 
 After redirecting user to Jibimo gateway, they will see a web page to pay you money through Jibimo account or normal banking gateway.
 
-==== Verifying Request Transactions
+==== ✔️ Verifying Request Transactions
 
 After that, they will be back to your provided `$returnUrl`, so you can validate their transaction there:
 
@@ -98,13 +98,13 @@ if($validationResult->isAccepted()) {
 // Otherwise, there is a problem. You can get raw response or handle exceptions to find out why there is still problem
 ----
 
-=== Pay Money to People
+=== 💲 Pay Money to People
 
 Using Jibimo Payment API is straight forward.
 
 Simply you will pay money and then validate it. There is no extra step like request money to show gateway or anything else to user.
 
-==== Using Jibimo Pay API
+==== 📫 Using Jibimo Pay API
 
 Use following code to pay to a mobile number which may or may not be registered in Jibimo. If the mobile number registered in Jibimo, money will be transferred to its Jibimo account immediately, otherwise it will be pending for user to be registered in Jibimo. They will be receive an SMS by Jibimo to be informed about payment.
 
@@ -135,7 +135,7 @@ if(JibimoTransactionStatus::ACCEPTED === $response->getStatus()) {
 // For other problems and errors, you can see the raw response or catch exceptions
 ----
 
-==== Verifying Pay Transactions
+==== ✔️ Verifying Pay Transactions
 
 Validating pay transactions is easy. You can use following code:
 
@@ -155,13 +155,13 @@ $validationResult = Jibimo::validatePay($baseUrl, $token, $transactionId,
 ----
 
 
-=== Extended Pay AKA Direct Pay API
+=== 🚄 Extended Pay AKA Direct Pay API
 
 Using Jibimo _Extended Payment_ API, you can pay directly to bank account of people using the combination of their mobile number and IBAN (Sheba) number.
 
 The difference between this method and the normal payment is in IBAN (Sheba) number and also in extended payment, money will be directly transferred to the original bank account of user whereas in normal payment it would transfer to the Jibimo account of user. So if the user is not registered in Jibimo, it will get money anyway without even contacting with any of Jibimo services.
 
-==== Using Jibimo Extended Pay API
+==== 🌈 Using Jibimo Extended Pay API
 
 Use following code to pay to combination of a mobile number and IBAN (Sheba) number which may or may not be registered in Jibimo. In this method, money will be transferred directly to the original bank account of user using _Paya_.
 
@@ -193,7 +193,7 @@ if(JibimoTransactionStatus::ACCEPTED === $response->getStatus()) {
 // For other problems and errors, you can see the raw response or catch exceptions
 ----
 
-==== Verifying Extended Pay Transactions
+==== ✔️ Verifying Extended Pay Transactions
 
 Validating extended pay transactions is easy. You can use following code:
 
@@ -216,52 +216,52 @@ That was it!, hope this quick start will help you up and running quickly.
 
 Please feel free to post an issue if you found any problems in this package.
 
-== Jibimo API Specifications
+== 📃 Jibimo API Specifications
 
 To better understanding Jibimo API specifications you can see it's API documentation available at https://jibimo.com/api/documentaion . But here you can find a simple cheat sheet to use.
 
-=== Privacy Levels
+=== 🎭 Privacy Levels
 
 Jibimo has 3 privacy levels to show transactions to users.
 
-==== Personal
+==== 😃 Personal
 
 It means the transaction is only visible between two parties that are involved in it, meaning payer and payee. So only these two people can see this transaction.
 
-==== Friend
+==== 👪 Friend
 
 It means the transaction is only visible between two parties that are involved in it *AND* their friends, meaning payer and payee and Jibimo friends of payer and Jibimo friends of payee.
 
 NOTE: In this privacy level, the amount of transaction is not visible for people other than payer and payee.
 
-==== Public
+==== 🏦 Public
 
 Means anyone who is registered in Jibimo can see this transaction. So it can be a good point for promoting your products in a social media like, type of feed.
 
 NOTE: In this privacy level, the amount of transaction is not visible for people other than payer and payee.
 
-=== Transaction Statuses
+=== 🚦 Transaction Statuses
 
 In Jibimo API, transactions have three different statuses.
 
-==== Rejected
+==== ⛔️ Rejected
 
 Means one of parties were reject to accept the transaction or there is a problem with the transaction.
 
 For example in request money API, if user clicks the cancel button, the transaction status will be set to `Rejected`. Or if you pay to an invalid IBAN(Sheba) number, the transaction status will be `Rejected` after failure response from bank to Jibimo.
 
-==== Pending
+==== 🕞 Pending
 
 This status means the transaction is pending for something else to happen.
 
 For example if you pay to a user who is not registered in Jibimo using normal pay API, the transaction will be pending until the user comes in Jibimo.
 
-==== Accepted
+==== ✅ Accepted
 
 This status means that transaction was successful and everything went cool.
 
 
-=== Mobile Number Format
+=== 📱 Mobile Number Format
 
 This package will try to normalize your mobile numbers to match it with Jibimo API requirement.
 
@@ -279,7 +279,7 @@ But in this package you can use following formats as well:
 All of above formats are supported.
 
 
-=== IBAN (Sheba) Format
+=== 📊 IBAN (Sheba) Format
 
 like mobile number, this package will try to normalize your IBAN(Sheba) numbers too.
 
@@ -294,7 +294,7 @@ But in this package you can use both formats with or without leading `IR`:
 
 All of above formats are supported.
 
-== Contributing
+== 💝 Contributing
 
 If you enjoyed this project, please consider contributing to it and make it better.
 
