@@ -1,0 +1,303 @@
+= Jibimo API PHP Library
+Hesam Gholami <hesamgholami@yahoo.com>
+v1.0, 2019-05-26
+
+++++
+<link rel="stylesheet"  href="http://cdnjs.cloudflare.com/ajax/libs/font-awesome/3.1.0/css/font-awesome.min.css">
+++++
+:icons: font
+:experimental: true
+
+Welcome to PHP library of Jibimo API, This library will make payment development like a breeze for you!
+
+image:https://img.shields.io/travis/j-tag/jibimo-api-php-lib.svg[Travis (.org)]
+image:https://img.shields.io/github/release/j-tag/jibimo-api-php-lib.svg[GitHub release]
+image:https://img.shields.io/packagist/php-v/puresoft/jibimo-api.svg[PHP from Packagist]
+
+== Quick Start
+
+Actually this library is a general purpose wrapper around the main Jibimo REST API. So it will provide several data model objects and services to use Jibimo API in PHP easily.
+
+Also this library provides a simple exception handling footprint for you to easily find problems of communication with Jibimo REST API.
+
+Below you can see a quick start of how using this package:
+
+=== Installation
+
+Simply install this package using following composer command:
+
+[source, bash]
+----
+composer require puresoft/jibimo-api --no-dev
+----
+
+So this will check required components of library and install them along with the library itself.
+
+=== Request Money from People
+
+For using Jibimo money request API you should first initiate the transaction and redirect user to the gateway, after returning back from gateway you *MUST* validate the transaction, and if the transaction was valid and accepted, you are all set and user was paid you correctly.
+
+Below you can see the instruction:
+
+==== Initiating Transaction and Redirecting User to Gateway
+
+Use following code to initiate a request transaction and redirect user to gateway:
+
+[source, php]
+----
+$baseUrl = "https://jibimo.com/api";
+$token = "..."; // You should obtain this token from your Jibimo panel
+
+$mobile = "09366061280";
+$amountInToman = 8500;
+$privacyLevel = JibimoPrivacyLevel::PUBLIC;
+$trackerId = "xxxx" // Anything like a factor number or maybe a UUID, it's up to you
+$description = "Thank you for using our service :)"; // Optional, this will show up in Jibimo feed
+$returnUrl = "http://mywebsite.com/callback/?something=somethingelse"; // Optional, after paymnt, Jibimo will redirect user to this URL. If you omit it, Jibimo will redirect user to your company homepage
+
+$response = Jibimo::request($baseUrl, $token, $mobile",
+            $amountInToman, $privacyLevel, $trackerId, $description, $returnUrl);
+
+// Status of transaction must be `Pending`
+if(JibimoTransactionStatus::PENDING === $response->getStatus()) {
+
+    // Save Jibimo transaction ID to database or whatever to use that to verify transaction later
+    // $response->getTransactionId();
+
+    // Now, redirect user to Jibimo gateway
+    $redirect = $response->getRedirectUrl();
+    header("Location: $redirect");
+    exit();
+}
+----
+
+After redirecting user to Jibimo gateway, they will see a web page to pay you money through Jibimo account or normal banking gateway.
+
+==== Verifying Request Transactions
+
+After that, they will be back to your provided `$returnUrl`, so you can validate their transaction there:
+
+[source, php]
+----
+$baseUrl = "https://jibimo.com/api";
+$token = "..."; // You should obtain this token from your Jibimo panel
+
+$transactionId = X; // You should get this transaction ID from where you saved it when you were creating the request in the previous step
+$mobile = "09366061280";
+$amountInToman = 8500;
+$trackerId = "xxxx" //Tracker ID of main transaction
+
+
+$validationResult = Jibimo::validateRequest($baseUrl, $token, $transactionId,
+            $mobile, $amountInToman, $trackerId);
+
+// Validate and check status of transaction in Jibimo
+if($validationResult->isAccepted()) {
+    // Transaction was successful, user paid money correctly
+}
+// Otherwise, there is a problem. You can get raw response or handle exceptions to find out why there is still problem
+----
+
+=== Pay Money to People
+
+Using Jibimo Payment API is straight forward.
+
+Simply you will pay money and then validate it. There is no extra step like request money to show gateway or anything else to user.
+
+==== Using Jibimo Pay API
+
+Use following code to pay to a mobile number which may or may not be registered in Jibimo. If the mobile number registered in Jibimo, money will be transferred to its Jibimo account immediately, otherwise it will be pending for user to be registered in Jibimo. They will be receive an SMS by Jibimo to be informed about payment.
+
+[source, php]
+----
+$baseUrl = "https://jibimo.com/api";
+$token = "..."; // You should obtain this token from your Jibimo panel
+
+$mobile = "09366061280";
+$amountInToman = 8500;
+$privacyLevel = JibimoPrivacyLevel::PUBLIC;
+$trackerId = "xxxx" // Anything like a factor number or maybe a UUID, it's up to you
+$description = "Thank you for using our service :)"; // Optional, this will show up in Jibimo feed
+
+
+$response = Jibimo::pay($baseUrl, $token, $mobile,
+            $amountInToman, $privacyLevel, $trackerId, $description);
+
+// Here you should save transaction ID to verify it later
+// $response->getTransactionId();
+
+if(JibimoTransactionStatus::ACCEPTED === $response->getStatus()) {
+    // Money was paid immediately
+} else if(JibimoTransactionStatus::PENDING === $response->getStatus()) {
+    // The user was not registered in Jibimo, so it will be pending untill user beig registered in Jibimo
+}
+
+// For other problems and errors, you can see the raw response or catch exceptions
+----
+
+==== Verifying Pay Transactions
+
+Validating pay transactions is easy. You can use following code:
+
+[source, php]
+----
+$baseUrl = "https://jibimo.com/api";
+$token = "..."; // You should obtain this token from your Jibimo panel
+
+$transactionId = X; // You should get this transaction ID from where you saved it when you were creating the request in the previous step
+$mobile = "09366061280";
+$amountInToman = 8500;
+$trackerId = "xxxx" // Tracker ID of main transaction
+
+
+$validationResult = Jibimo::validatePay($baseUrl, $token, $transactionId,
+            $mobile, $amountInToman, $trackerId);
+----
+
+
+=== Extended Pay AKA Direct Pay API
+
+Using Jibimo _Extended Payment_ API, you can pay directly to bank account of people using the combination of their mobile number and IBAN (Sheba) number.
+
+The difference between this method and the normal payment is in IBAN (Sheba) number and also in extended payment, money will be directly transferred to the original bank account of user whereas in normal payment it would transfer to the Jibimo account of user. So if the user is not registered in Jibimo, it will get money anyway without even contacting with any of Jibimo services.
+
+==== Using Jibimo Extended Pay API
+
+Use following code to pay to combination of a mobile number and IBAN (Sheba) number which may or may not be registered in Jibimo. In this method, money will be transferred directly to the original bank account of user using _Paya_.
+
+[source, php]
+----
+$baseUrl = "https://jibimo.com/api";
+$token = "..."; // You should obtain this token from your Jibimo panel
+
+$mobile = "09366061280";
+$amountInToman = 8500;
+$iban = "IR140570028870010133089001"; // This is my real IBAN(Sheba), so keep your head up to not pay to it mistakenly, I will not return back your money to you ! :D
+$privacyLevel = JibimoPrivacyLevel::PUBLIC;
+$trackerId = "xxxx" // Anything like a factor number or maybe a UUID, it's up to you
+$description = "Thank you for using our service :)"; // Optional, this will show up in Jibimo feed
+$name = "حسام"; // Optional, The first name of IBAN(Sheba) owner
+$family = "غلامی"; // Optional, The last name of IBAN(Sheba) owner
+
+$response = Jibimo::extendedPay($baseUrl, $token, $mobile,
+            $amountInToman, $privacyLevel, $iban, $trackerId,
+            $description, $name, $family);
+
+// Here you should save transaction ID to verify it later
+// $response->getTransactionId();
+
+if(JibimoTransactionStatus::ACCEPTED === $response->getStatus()) {
+    // Money was paid successfully
+}
+
+// For other problems and errors, you can see the raw response or catch exceptions
+----
+
+==== Verifying Extended Pay Transactions
+
+Validating extended pay transactions is easy. You can use following code:
+
+[source, php]
+----
+$baseUrl = "https://jibimo.com/api";
+$token = "..."; // You should obtain this token from your Jibimo panel
+
+$transactionId = X; // You should get this transaction ID from where you saved it when you were creating the request in the previous step
+$mobile = "09366061280";
+$amountInToman = 8500;
+$trackerId = "xxxx" // Tracker ID of main transaction
+
+
+$validationResult = Jibimo::validateExtendedPay($baseUrl, $token, $transactionId,
+            $mobile, $amountInToman, $trackerId);
+----
+
+That was it!, hope this quick start will help you up and running quickly.
+
+Please feel free to post an issue if you found any problems in this package.
+
+== Jibimo API Specifications
+
+To better understanding Jibimo API specifications you can see it's API documentation available at https://jibimo.com/api/documentaion . But here you can find a simple cheat sheet to use.
+
+=== Privacy Levels
+
+Jibimo has 3 privacy levels to show transactions to users.
+
+==== Personal
+
+It means the transaction is only visible between two parties that are involved in it, meaning payer and payee. So only these two people can see this transaction.
+
+==== Friend
+
+It means the transaction is only visible between two parties that are involved in it *AND* their friends, meaning payer and payee and Jibimo friends of payer and Jibimo friends of payee.
+
+NOTE: In this privacy level, the amount of transaction is not visible for people other than payer and payee.
+
+==== Public
+
+Means anyone who is registered in Jibimo can see this transaction. So it can be a good point for promoting your products in a social media like, type of feed.
+
+NOTE: In this privacy level, the amount of transaction is not visible for people other than payer and payee.
+
+=== Transaction Statuses
+
+In Jibimo API, transactions have three different statuses.
+
+==== Rejected
+
+Means one of parties were reject to accept the transaction or there is a problem with the transaction.
+
+For example in request money API, if user clicks the cancel button, the transaction status will be set to `Rejected`. Or if you pay to an invalid IBAN(Sheba) number, the transaction status will be `Rejected` after failure response from bank to Jibimo.
+
+==== Pending
+
+This status means the transaction is pending for something else to happen.
+
+For example if you pay to a user who is not registered in Jibimo using normal pay API, the transaction will be pending until the user comes in Jibimo.
+
+==== Accepted
+
+This status means that transaction was successful and everything went cool.
+
+
+=== Mobile Number Format
+
+This package will try to normalize your mobile numbers to match it with Jibimo API requirement.
+
+In Jibimo API, mobile number must be in following format:
+
+`+989366061280`
+
+But in this package you can use following formats as well:
+
+`9366061280`
+`09366061280`
+`989366061280`
+`+989366061280`
+
+All of above formats are supported.
+
+
+=== IBAN (Sheba) Format
+
+like mobile number, this package will try to normalize your IBAN(Sheba) numbers too.
+
+In Jibimo API, IBAN(Sheba) number must be in following format:
+
+`140570028870010133089001`
+
+But in this package you can use both formats with or without leading `IR`:
+
+`140570028870010133089001`
+`IR140570028870010133089001`
+
+All of above formats are supported.
+
+== Contributing
+
+If you enjoyed this project, please consider contributing to it and make it better.
+
+And please don’t forget to give a star to this project.
+
+Thank you and happy coding!
