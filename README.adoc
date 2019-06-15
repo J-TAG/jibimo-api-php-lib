@@ -28,7 +28,7 @@ Simply install this package using following composer command:
 
 [source, bash]
 ----
-composer require puresoft/jibimo-api --no-dev
+composer require puresoft/jibimo-api --prefer-stable
 ----
 
 So this will check required components of library and install them along with the library itself.
