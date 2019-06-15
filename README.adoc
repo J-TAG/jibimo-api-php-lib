@@ -51,11 +51,11 @@ $token = "..."; // You should obtain this token from your Jibimo panel
 $mobile = "09366061280";
 $amountInToman = 8500;
 $privacyLevel = JibimoPrivacyLevel::PUBLIC;
-$trackerId = "xxxx" // Anything like a factor number or maybe a UUID, it's up to you
+$trackerId = "xxxx"; // Anything like a factor number or maybe a UUID, it's up to you
 $description = "Thank you for using our service :)"; // Optional, this will show up in Jibimo feed
 $returnUrl = "http://mywebsite.com/callback/?something=somethingelse"; // Optional, after paymnt, Jibimo will redirect user to this URL. If you omit it, Jibimo will redirect user to your company homepage
 
-$response = Jibimo::request($baseUrl, $token, $mobile",
+$response = Jibimo::request($baseUrl, $token, $mobile,
             $amountInToman, $privacyLevel, $trackerId, $description, $returnUrl);
 
 // Status of transaction must be `Pending`
@@ -85,7 +85,7 @@ $token = "..."; // You should obtain this token from your Jibimo panel
 $transactionId = X; // You should get this transaction ID from where you saved it when you were creating the request in the previous step
 $mobile = "09366061280";
 $amountInToman = 8500;
-$trackerId = "xxxx" //Tracker ID of main transaction
+$trackerId = "xxxx"; //Tracker ID of main transaction
 
 
 $validationResult = Jibimo::validateRequest($baseUrl, $token, $transactionId,
@@ -116,7 +116,7 @@ $token = "..."; // You should obtain this token from your Jibimo panel
 $mobile = "09366061280";
 $amountInToman = 8500;
 $privacyLevel = JibimoPrivacyLevel::PUBLIC;
-$trackerId = "xxxx" // Anything like a factor number or maybe a UUID, it's up to you
+$trackerId = "xxxx"; // Anything like a factor number or maybe a UUID, it's up to you
 $description = "Thank you for using our service :)"; // Optional, this will show up in Jibimo feed
 
 
@@ -129,7 +129,7 @@ $response = Jibimo::pay($baseUrl, $token, $mobile,
 if(JibimoTransactionStatus::ACCEPTED === $response->getStatus()) {
     // Money was paid immediately
 } else if(JibimoTransactionStatus::PENDING === $response->getStatus()) {
-    // The user was not registered in Jibimo, so it will be pending untill user beig registered in Jibimo
+    // The user was not registered in Jibimo, so it will be pending until user being registered in Jibimo
 }
 
 // For other problems and errors, you can see the raw response or catch exceptions
@@ -147,11 +147,17 @@ $token = "..."; // You should obtain this token from your Jibimo panel
 $transactionId = X; // You should get this transaction ID from where you saved it when you were creating the request in the previous step
 $mobile = "09366061280";
 $amountInToman = 8500;
-$trackerId = "xxxx" // Tracker ID of main transaction
+$trackerId = "xxxx"; // Tracker ID of main transaction
 
 
 $validationResult = Jibimo::validatePay($baseUrl, $token, $transactionId,
             $mobile, $amountInToman, $trackerId);
+
+// Validate and check status of transaction in Jibimo
+if($validationResult->isAccepted()) {
+    // Transaction was successful, user received money
+}
+// Otherwise, there is a problem. You can get raw response or handle exceptions to find out why there is still problem
 ----
 
 
@@ -174,7 +180,7 @@ $mobile = "09366061280";
 $amountInToman = 8500;
 $iban = "IR140570028870010133089001"; // This is my real IBAN(Sheba), so keep your head up to not pay to it mistakenly, I will not return back your money to you ! :D
 $privacyLevel = JibimoPrivacyLevel::PUBLIC;
-$trackerId = "xxxx" // Anything like a factor number or maybe a UUID, it's up to you
+$trackerId = "xxxx"; // Anything like a factor number or maybe a UUID, it's up to you
 $description = "Thank you for using our service :)"; // Optional, this will show up in Jibimo feed
 $name = "حسام"; // Optional, The first name of IBAN(Sheba) owner
 $family = "غلامی"; // Optional, The last name of IBAN(Sheba) owner
@@ -205,11 +211,17 @@ $token = "..."; // You should obtain this token from your Jibimo panel
 $transactionId = X; // You should get this transaction ID from where you saved it when you were creating the request in the previous step
 $mobile = "09366061280";
 $amountInToman = 8500;
-$trackerId = "xxxx" // Tracker ID of main transaction
+$trackerId = "xxxx"; // Tracker ID of main transaction
 
 
 $validationResult = Jibimo::validateExtendedPay($baseUrl, $token, $transactionId,
             $mobile, $amountInToman, $trackerId);
+
+// Validate and check status of transaction in Jibimo
+if($validationResult->isAccepted()) {
+    // Transaction was successful, user received money
+}
+// Otherwise, there is a problem. You can get raw response or handle exceptions to find out why there is still problem
 ----
 
 That was it!, hope this quick start will help you up and running quickly.
