@@ -14,6 +14,7 @@ use puresoft\jibimo\exceptions\InvalidJibimoResponseException;
 use puresoft\jibimo\exceptions\InvalidJibimoTransactionStatusException;
 use puresoft\jibimo\exceptions\InvalidMobileNumberException;
 use puresoft\jibimo\internals\CurlResult;
+use puresoft\jibimo\internals\DataNormalizer;
 use puresoft\jibimo\models\AbstractTransactionResponse;
 use puresoft\jibimo\models\verification\ExtendedPayTransactionVerificationResponse;
 use puresoft\jibimo\models\verification\PayTransactionVerificationResponse;
@@ -67,7 +68,7 @@ class JibimoValidator extends AbstractTransactionProvider
 
         $response = new RequestTransactionVerificationResponse($curlResult->getResult(), $jsonResult->id, $jsonResult->tracker_id,
             $jsonResult->amount, $jsonResult->payer, $jsonResult->privacy, $jsonResult->status,
-            $jsonResult->created_at->date, $jsonResult->updated_at->date, $jsonResult->description);
+            $jsonResult->created_at, $jsonResult->updated_at, $jsonResult->description);
 
 
         return $this->validateAndReturnResult($curlResult, $response, $transactionId, $amount, $response->getPayer(),
@@ -96,7 +97,7 @@ class JibimoValidator extends AbstractTransactionProvider
 
         $response = new PayTransactionVerificationResponse($curlResult->getResult(), $jsonResult->id,
             $jsonResult->tracker_id, $jsonResult->amount, $jsonResult->payee, $jsonResult->privacy, $jsonResult->status,
-            $jsonResult->created_at->date, $jsonResult->updated_at->date, $jsonResult->description);
+            $jsonResult->created_at, $jsonResult->updated_at, $jsonResult->description);
 
 
         return $this->validateAndReturnResult($curlResult, $response, $transactionId, $amount, $response->getPayee(),
@@ -126,14 +127,14 @@ class JibimoValidator extends AbstractTransactionProvider
 
         $response = new ExtendedPayTransactionVerificationResponse($curlResult->getResult(), $jsonResult->id,
             $jsonResult->tracker_id, $jsonResult->amount, $jsonResult->payee, $jsonResult->privacy, $jsonResult->status,
-            $jsonResult->created_at->date, $jsonResult->updated_at->date, $jsonResult->description);
+            $jsonResult->created_at, $jsonResult->updated_at, $jsonResult->description);
 
         return $this->validateAndReturnResult($curlResult, $response, $transactionId, $amount, $response->getPayee(),
             $mobileNumber, $trackerId);
 
     }
 
-    /**
+    /**-
      * This method will do some general checks and returns the validation result object based on input data.
      * @param CurlResult $curlResult CURL result set object.
      * @param AbstractTransactionResponse $response Validation API response data object.
@@ -143,13 +144,15 @@ class JibimoValidator extends AbstractTransactionProvider
      * @param string $mobileNumber Target mobile number that money was paid to.
      * @param string $trackerId Tracker ID of that transaction.
      * @return JibimoValidationResult Generated validation result data object.
+     * @throws InvalidMobileNumberException
      */
     private function validateAndReturnResult(CurlResult $curlResult, AbstractTransactionResponse $response, int $transactionId, int $amount,
                                              string $expectedMobileNumber, string $mobileNumber, string $trackerId)
     : JibimoValidationResult
     {
         if($response->getTransactionId() === $transactionId and $response->getAmount() === $amount
-            and $expectedMobileNumber === $mobileNumber and $response->getTrackerId() === $trackerId) {
+            and DataNormalizer::normalizeMobileNumber($expectedMobileNumber) === DataNormalizer::normalizeMobileNumber($mobileNumber)
+            and $response->getTrackerId() === $trackerId) {
 
             // Transaction details is valid, but its status may be vary
             return new JibimoValidationResult($curlResult, true, $response);

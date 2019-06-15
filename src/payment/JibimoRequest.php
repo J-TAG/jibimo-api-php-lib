@@ -52,7 +52,7 @@ class JibimoRequest extends AbstractTransactionProvider
         // Convert raw response data to relevant object
         $response = new RequestTransactionResponse($curlResult->getResult(), $jsonResult->id, $jsonResult->tracker_id,
             $jsonResult->amount, $jsonResult->payer, $jsonResult->privacy, $jsonResult->status,
-            $jsonResult->created_at->date, $jsonResult->updated_at->date, $jsonResult->redirect,
+            $jsonResult->created_at, $jsonResult->updated_at, $jsonResult->redirect,
             $jsonResult->description);
 
         $this->response = $response;
