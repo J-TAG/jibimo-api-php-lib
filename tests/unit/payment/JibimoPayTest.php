@@ -63,9 +63,8 @@ class JibimoPayTest extends TestCase
 
         // Mock response
         $mockResponse = new CurlResult(200, '{"id":2520,"tracker_id":"85","amount":8500,
-        "payee":"+989366061280","privacy":"Personal","status":"Accepted","created_at":{"date":"2019-05-25 22:26:19.000000",
-        "timezone_type":3,"timezone":"Asia\/Tehran"},"updated_at":{"date":"2019-05-25 22:26:19.000000","timezone_type":3,
-        "timezone":"Asia\/Tehran"},"description":null}');
+        "payee":"+989366061280","privacy":"Personal","status":"Accepted","created_at":"2019-06-15T16:50:03.000000Z",
+        "updated_at":"2019-06-15T16:50:03.000000Z","description":null}');
 
         // Mock implementations
         $curlMockery->allows()->post($GLOBALS['baseUrl'] . "/business/pay", $data, $headers)->andReturns($mockResponse);
@@ -113,9 +112,8 @@ class JibimoPayTest extends TestCase
 
         // Mock response
         $mockResponse = new CurlResult(200, '{"id":2520,"tracker_id":"85","amount":8500,
-        "payee":"+989366061280","privacy":"Personal","status":"Accepted","created_at":{"date":"2019-05-25 22:26:19.000000",
-        "timezone_type":3,"timezone":"Asia\/Tehran"},"updated_at":{"date":"2019-05-25 22:26:19.000000","timezone_type":3,
-        "timezone":"Asia\/Tehran"},"description":null}');
+        "payee":"+989366061280","privacy":"Personal","status":"Accepted","created_at":"2019-06-15T16:50:03.000000Z",
+        "updated_at":"2019-06-15T16:50:03.000000Z","description":null}');
 
         // Mock implementations
         $curlMockery->allows()->post($GLOBALS['baseUrl'] . "/business/extended-pay", $data, $headers)->andReturns($mockResponse);
